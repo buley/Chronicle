@@ -102,7 +102,7 @@ var Chronicle = ( function() {
 		};
 
 		InDB.install( {
-			store: Private.rivisions.table_name
+			store: Private.revisions.table_name
 			, indexes: indexes
 			, on_success: on_success
 			, on_error: on_error
@@ -136,7 +136,7 @@ var Chronicle = ( function() {
 
 		/* Setup */
 
-		var store = Private.rivisions.table_name;
+		var store = Private.revisions.table_name;
 
 		/* Defaults */
 
@@ -177,7 +177,7 @@ var Chronicle = ( function() {
 
 		/* Setup */
 
-		var store = Private.rivisions.table_name;
+		var store = Private.revisions.table_name;
 
 		/* Defaults */
 
@@ -314,7 +314,7 @@ var Chronicle = ( function() {
 
 		/* Setup */
 
-		var store = Private.rivisions.table_name;
+		var store = Private.revisions.table_name;
 
 		/* Defaults */
 
@@ -371,7 +371,7 @@ var Chronicle = ( function() {
 
 		/* Setup */
 
-		var store = Private.rivisions.table_name;
+		var store = Private.revisions.table_name;
 
 		/* Defaults */
 
@@ -810,7 +810,7 @@ var Chronicle = ( function() {
 
 		/* Setup */
 
-		var store = Private.rivisions.table_name;
+		var store = Private.revisions.table_name;
 
 		/* Defaults */
 
@@ -909,7 +909,7 @@ var Chronicle = ( function() {
 
 		/* Setup */
 
-		var store = Private.rivisions.table_name;
+		var store = Private.revisions.table_name;
 
 		/* Defaults */
 
@@ -973,7 +973,7 @@ var Chronicle = ( function() {
 
 		/* Setup */
 
-		var store = Private.rivisions.table_name;
+		var store = Private.revisions.table_name;
 
 		/* Defaults */
 
