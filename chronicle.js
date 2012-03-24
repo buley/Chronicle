@@ -1110,8 +1110,7 @@ var Chronicle = ( function() {
 	/* Classical prototypical inheritance pattern */
 
 	var Public = function() {
-		InDB = new IDB( { 'database': 'Chronicle', version: version } );
-		Private.install();
+		InDB = new IDB( { database: 'Chronicle', version: version } );
 	};
 
 	/* Install */
