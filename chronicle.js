@@ -1201,7 +1201,7 @@ var Chronicle = ( function() {
 	/* returns an error object on error */
 	Public.prototype.forward = function( request ) {
 		var item_id = ( 'undefined' !== typeof request.item_id ) ? request.item_id : null;
-		var count = ( 'number' === typeof request.count ) ? request.count : null );
+		var count = ( 'number' === typeof request.count ) ? request.count : null;
 		var on_success = ( 'function' === typeof request.on_success ) ? request.on_success : Private.default.on_success;
 		var on_error = ( 'function' === typeof request.on_error ) ? request.on_error : Private.default.on_error;
 		var own_on_success = function() {
@@ -1217,7 +1217,7 @@ var Chronicle = ( function() {
 	/* returns an error object on error */
 	Public.prototype.rollback = function( request ) {
 		var item_id = ( 'undefined' !== typeof request.item_id ) ? request.item_id : null;
-		var count = ( 'number' === typeof request.count ) ? request.count : null );
+		var count = ( 'number' === typeof request.count ) ? request.count : null;
 		var on_success = ( 'function' === typeof request.on_success ) ? request.on_success : Private.default.on_success;
 		var on_error = ( 'function' === typeof request.on_error ) ? request.on_error : Private.default.on_error;
 		var own_on_success = function() {
