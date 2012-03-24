@@ -1171,8 +1171,8 @@ var Chronicle = ( function() {
 		var item_id = ( 'undefined' !== typeof request.item_id ) ? request.item_id : null;
 		var on_success = ( 'function' === typeof request.on_success ) ? request.on_success : Private.default.on_success;
 		var on_error = ( 'function' === typeof request.on_error ) ? request.on_error : Private.default.on_error;
-		var begin = ( 'number' === typeof request.begin ) ? request.begin : null );
-		var end = ( 'number' === typeof request.end ) ? request.end : null );
+		var begin = ( 'number' === typeof request.begin ) ? request.begin : null;
+		var end = ( 'number' === typeof request.end ) ? request.end : null;
 		var own_on_success = function() {
 			if( 'function' === typeof on_success ) {
 				on_success( request );
