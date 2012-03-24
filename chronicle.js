@@ -15,9 +15,7 @@ var Chronicle = ( function() {
 	var InDB;
 	var version = 1;
 
-	var Private = function() {
-		InDB = new IDB( { 'database': 'Chronicle_' + Private.version, version: version } );
-	};
+	var Private = function() {};
 
 	/* Defaults */
 
@@ -1112,6 +1110,7 @@ var Chronicle = ( function() {
 	/* Classical prototypical inheritance pattern */
 
 	var Public = function() {
+		InDB = new IDB( { 'database': 'Chronicle_' + Private.version, version: version } );
 		Private.install();
 	};
 
