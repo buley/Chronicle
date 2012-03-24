@@ -10,15 +10,14 @@ var Chronicle = ( function() {
 
 	/* Uses singleton pattern */
 
-	var Private = function() {
-
-	};
-
-	Private.version = 1;
-
 	/* Dependencies */
+	
+	var InDB;
+	var version = 1;
 
-	InDB = new IDB( { 'database': 'Chronicle_' + Private.version } );
+	var Private = function() {
+		InDB = new IDB( { 'database': 'Chronicle_' + Private.version, version: version } );
+	};
 
 	/* Defaults */
 
@@ -43,29 +42,30 @@ var Chronicle = ( function() {
 	Private.install = function( on_success, on_error ) {
 
 		var count = 0;		
-		var result = {};
+		var results = [];
+		var errors = [];
 
-		var own_on_success = function( response, type ) {
+		var own_on_success = function( response ) {
 			count += 1;
-			result[ type ] = response;
+			results.push( response );
 			if( 2 === count ) {
 				if( 'function' === typeof on_success ) {
-					on_success( result );
+					on_success( results );
 				}
 			}
 		};
 
-		var own_on_error = function( response, type ) {
+		var own_on_error = function( error ) {
 			count += 1;
-			result[ type ] = response;
+			errors.push( error );
 			if( 2 === count ) {
 				if( 'function' === typeof on_error ) {
-					on_error( result );
+					on_error( errors, results );
 				}
 			}
 		};
 
-		Private.revision.install( own_on_success, own_on_error );
+		Private.revisions.install( own_on_success, own_on_error );
 		Private.items.install( own_on_success, own_on_error );
 
 	};
@@ -73,8 +73,10 @@ var Chronicle = ( function() {
 	/* Revisions */
 
 	Private.revision = Private.revision || {};
+	Private.revisions = Private.revisions || {};
+	Private.revisions.table_name = 'revisions';
 
-	Private.revision.install = function( on_success, on_error ) {
+	Private.revisions.install = function( on_success, on_error ) {
 
 		var own_on_success = function() {
 			if( 'function' === typeof on_success ) {
@@ -100,7 +102,7 @@ var Chronicle = ( function() {
 		};
 
 		InDB.install( {
-			store: 'revisions'
+			store: Private.rivisions.table_name
 			, indexes: indexes
 			, on_success: on_success
 			, on_error: on_error
@@ -108,21 +110,312 @@ var Chronicle = ( function() {
 
 	};
 
-	Private.revision.expunge = function() {};
+	Private.revision.purge = function() {
 
-	Private.revision.coverup = function() {};
+		/* Callbacks */
 
-	Private.revision.purge = function() {};
+		var own_on_success = function( value ) {
+			if( 'function' === typeof on_success ) {
+				on_success( value );
+			}
+		};
 
-	Private.revision.get = function() {};
+		var own_on_error = function( context ) {
+			if( 'function' === typeof on_error ) {
+				on_error( context );
+			}
+		};
 
-	Private.revision.restore = function() {};
+		/* Request */
 
-	Private.revision.activate = function() {};
+		Private.revision.update( revision_id, { data: null }, own_on_success, own_on_error );
 
-	Private.revision.update = function() {};
+	};
 
-	Private.revision.save = function( item_id, data, on_success, on_error ) {
+	Private.revision.get = function( revision_id, on_success, on_error ) {
+
+		/* Setup */
+
+		var store = Private.rivisions.table_name;
+
+		/* Defaults */
+
+		var index = null;
+		var key = revision_id;
+		var properties = null;
+		var expecting = null;
+
+		/* Callbacks */
+
+		var own_on_success = function( value ) {
+			if( 'function' === typeof on_success ) {
+				on_success( value );
+			}
+		};
+
+		var own_on_error = function( context ) {
+			if( 'function' === typeof on_error ) {
+				on_error( context );
+			}
+		};
+
+		/* Request */
+
+		InDB.get( {
+			'index': index
+			, 'key': key
+			, 'expecting': expecting
+			, 'on_success': own_on_success
+			, 'on_error': own_on_error
+			, 'properties': properties
+			, 'store': store
+		} );
+
+	};
+
+	Private.revisions.get = function( item_id, on_success, on_error ) {
+
+		/* Setup */
+
+		var store = Private.rivisions.table_name;
+
+		/* Defaults */
+
+		var index = 'item_id';
+		var limit = null;
+		var direction = InDB.cursor.direction.next();
+		var key = item_id;
+		var left = null;
+		var right = null;
+		var left_inclusive = null;
+		var right_inclusive = null;
+
+		var results = [];
+		var errors = [];
+		var expecting = null;
+
+		/* Callbacks */
+
+		var own_on_success = function( response ) {
+			results.push( reponse );
+		};
+
+		var own_on_complete = function() {
+			if( errors.length > 0 ) {
+				if( 'function' === typeof on_error ) {
+					on_error( error, results );
+				}
+			} else {
+				if( 'function' === typeof on_success ) {
+					on_success( results );
+				}
+			}
+
+		};
+
+		var own_on_error = function( error ) {
+			errors.push( error );
+		};
+
+		/* Request */
+	
+		InDB.cursor.get( {
+			'direction': direction
+			, 'expecting': expecting
+			, 'key': key
+			, 'index': index
+			, 'left': left
+			, 'left_inclusive': left_inclusive
+			, 'limit': limit
+			, 'on_success': on_success
+			, 'on_complete': on_complete
+			, 'on_error': on_error
+			, 'right': right
+			, 'right_inclusive': right_inclusive
+			, 'store': store
+		} );
+
+	};
+
+	Private.revision.trash = function( item_id, revision_id, on_success, on_error ) {
+
+		/* Callbacks */
+
+		var own_on_success = function( value ) {
+			if( 'function' === typeof on_success ) {
+				on_success( value );
+			}
+		};
+
+		var own_on_error = function( context ) {
+			if( 'function' === typeof on_error ) {
+				on_error( context );
+			}
+		};
+
+		/* Request */
+
+		Private.revision.update( item_id, revision_id, { trashed: true }, own_on_success, own_on_error );
+
+	};
+
+	Private.revision.restore = function( item_id, revision_id, on_success, on_error ) {
+
+		/* Callbacks */
+
+		var own_on_success = function( value ) {
+			if( 'function' === typeof on_success ) {
+				on_success( value );
+			}
+		};
+
+		var own_on_error = function( context ) {
+			if( 'function' === typeof on_error ) {
+				on_error( context );
+			}
+		};
+
+		/* Request */
+
+		Private.revision.update( item_id, revision_id, { trashed: false }, own_on_success, own_on_error );
+
+	};
+
+	Private.revision.activate = function( revision_id, on_success, on_error ) {
+
+		/* Callbacks */
+
+		var own_on_success = function( value ) {
+			if( 'function' === typeof on_success ) {
+				on_success( value );
+			}
+		};
+
+		var own_on_error = function( context ) {
+			if( 'function' === typeof on_error ) {
+				on_error( context );
+			}
+		};
+
+		/* Request */
+
+		Private.revision.get( revision_id, function( get_result ) {
+				var item_id = get_result.id;
+				Private.item.update( item_id, { revision: revision_id }, own_on_success, own_on_error ); 
+		}, function( get_error ) {
+				if( 'function' === typeof own_on_error ) {
+					own_on_error( get_error );
+				}
+		} );
+
+	};
+
+	Private.revisions.update = function( item_id, revision_id, data, on_success, on_error ) {
+
+		/* Setup */
+
+		var store = Private.rivisions.table_name;
+
+		/* Defaults */
+
+		var index = 'item_id';
+		var limit = null;
+		var direction = InDB.cursor.direction.next();
+		var key = item_id;
+		var left = null;
+		var right = null;
+		var left_inclusive = null;
+		var right_inclusive = null;
+
+		var expecting = function( old ) {
+			return ( 'undefined' === old.id || null === old.id || revision_id !== old.id ) ? false : old;
+		};
+
+		/* Callbacks */
+
+		var own_on_success = function( value ) {
+			if( 'function' === typeof on_success ) {
+				on_success( value );
+			}
+		};
+
+		var own_on_error = function( context ) {
+			if( 'function' === typeof on_error ) {
+				on_error( context );
+			}
+		};
+
+		/* Request */
+	
+		InDB.cursor.update( {
+			'data': data
+			, 'direction': direction
+			, 'expecting': expecting
+			, 'key': key
+			, 'index': index
+			, 'left': left
+			, 'left_inclusive': left_inclusive
+			, 'limit': limit
+			, 'on_success': on_success
+			, 'on_complete': on_complete
+			, 'on_error': on_error
+			, 'right': right
+			, 'right_inclusive': right_inclusive
+			, 'store': store
+		} );
+
+	};
+
+
+	Private.revision.update = function( item_id, revision_id, data, on_success, on_error ) {
+
+		/* Setup */
+
+		var store = Private.rivisions.table_name;
+
+		/* Defaults */
+
+		var index = 'item_id';
+		var key = item_id;
+
+		var expecting = function( old ) {
+			return ( 'undefined' === old.id || null === old.id || revision_id !== old.id ) ? false : old;
+		};
+
+		/* Callbacks */
+
+		var own_on_success = function( value ) {
+			/* Callback */
+			if( 'function' === typeof on_success ) {
+				on_success( value );
+			}
+		};
+
+		var own_on_error = function( context ) {
+			/* Callback */
+			if( 'function' === typeof on_error ) {
+				on_error( context );
+			}
+		};
+
+		/* Request */
+
+		InDB.update( {
+			'data': data
+			, 'index': index
+			, 'key': key
+			, 'expecting': expecting
+			, 'on_success': own_on_success
+			, 'on_error': own_on_error
+			, 'store': store
+		} );
+
+	};
+
+
+
+
+	Private.revision.create = function( item_id, data, on_success, on_error ) {
 
 		/* Setup */
 
@@ -185,8 +478,10 @@ var Chronicle = ( function() {
 	/* Items */
 
 	Private.item = Private.item || {};
+	Private.items = Private.items || {};
+	Private.items.table_name = 'items';
 
-	Private.item.install = function() {
+	Private.items.install = function( on_success, on_error ) {
 
 		var own_on_success = function() {
 			if( 'function' === typeof on_success ) {
@@ -212,7 +507,7 @@ var Chronicle = ( function() {
 		};
 
 		InDB.install( {
-			store: 'items'
+			store: Private.itemss.table_name
 			, indexes: indexes
 			, on_success: on_success
 			, on_error: on_error
@@ -224,70 +519,523 @@ var Chronicle = ( function() {
 
 		/* Setup */
 
-		var store = request.store;
-		var data = request.data;
+		var store = Private.itemss.table_name;
 
-		if( 'undefined' === typeof data ) {
-			throw new Error( 'App.prototype.add: Data cannot be empty' );
-			return;
-		}
-
-		if( 'undefined' === typeof store || null === store ) {
-			throw new Error( 'App.prototype.add: Store cannot be empty' );
-			return null;
-		}
+		var own_data = {
+			revision_id: 0
+			, visible: false
+			, trashed: false
+		};
 
 		/* Callbacks */
 
-		var on_success = function( value ) {
-			/* Debug */
-			if( !!debug ) {
-				console.log( 'App.prototype.add success', value );
-			}
-			/* Callback */
-			if( 'function' == typeof request.on_success ) {
-				request.on_success( value );
-			}
+		var own_on_success = function( item_id ) {
+			var inner_on_success = function( revision_id ) {
+				Private.revision.activate( revision_id, on_success, on_error );
+			};
+			Private.revision.create( item_id, data, inner_on_success, on_error );
 		};
 
-		var on_error = function( context ) {
-			/* Debug */
-			if( !!debug ) {
-				console.log( 'App.prototype.add error', context );
-			}
-			/* Callback */
-			if( 'function' == typeof request.on_error ) {
-				request.on_error( context );
+		var own_on_error = function( context ) {
+			if( 'function' == typeof on_error ) {
+				on_error( context );
 			}
 		};
 
 		/* Request */
 
 		InDB.add( {
-			'data': data
-			, 'on_success': on_success
-			, 'on_error': on_error
+			'data': own_data
+			, 'on_success': own_on_success
+			, 'on_error': own_on_error
+			, 'store': store
+		} );
+
+	};
+
+	Private.item.get = function( item_id, on_success, on_error ) {
+
+		/* Setup */
+
+		var store = Private.itemss.table_name;
+
+		/* Defaults */
+
+		var index = null;
+		var key = item_id;
+		var properties = null;
+
+		var expecting = null;
+
+		/* Callbacks */
+
+		var own_on_success = function( value ) {
+			if( 'function' === typeof on_success ) {
+				on_success( value );
+			}
+		};
+
+		var own_on_error = function( context ) {
+			if( 'function' === typeof on_error ) {
+				on_error( context );
+			}
+		};
+
+		/* Request */
+
+		InDB.get( {
+			'index': index
+			, 'key': key
+			, 'expecting': expecting
+			, 'on_success': own_on_success
+			, 'on_error': own_on_error
+			, 'properties': properties
 			, 'store': store
 		} );
 
 
+	};
+
+	Private.items.get = function( on_success, on_error ) {
+
+		/* Setup */
+
+		var store = Private.itemss.table_name;
+
+		/* Defaults */
+
+		var index = null;
+		var limit = null;
+		var direction = InDB.cursor.direction.next();
+		var key = null;
+		var left = null;
+		var right = null;
+		var left_inclusive = null;
+		var right_inclusive = null;
+
+		var results = [];
+		var errors = [];
+		var expecting = null;
+
+		/* Callbacks */
+
+		var own_on_success = function( response ) {
+			results.push( reponse );
+		};
+
+		var own_on_complete = function() {
+			if( errors.length > 0 ) {
+				if( 'function' === typeof on_error ) {
+					on_error( error, results );
+				}
+			} else {
+				if( 'function' === typeof on_success ) {
+					on_success( results );
+				}
+			}
+		};
+
+		var own_on_error = function( error ) {
+			errors.push( error );
+		};
+
+		/* Request */
+	
+		InDB.cursor.get( {
+			'direction': direction
+			, 'expecting': expecting
+			, 'key': key
+			, 'index': index
+			, 'left': left
+			, 'left_inclusive': left_inclusive
+			, 'limit': limit
+			, 'on_success': on_success
+			, 'on_complete': on_complete
+			, 'on_error': on_error
+			, 'right': right
+			, 'right_inclusive': right_inclusive
+			, 'store': store
+		} );
+
 
 	};
 
-	Private.item.publish = function( item_id, on_success, on_error ) {};
+	Private.item.update = functioni( item_id, data, on_success, on_error ) {
 
-	Private.item.draft = function( item_id, on_success, on_error ) {};
+		/* Setup */
 
-	Private.item.forward = function( item_id, count, on_success, on_error )) {};
+		var store = Private.itemss.table_name;
 
-	Private.item.rollback = function( item_id, count, on_success, on_error ) {};
+		/* Defaults */
 
-	Private.item.clear = function( item_id, on_success, on_error ) {};
+		var index = null;
+		var key = item_id;
 
-	Private.item.chronicle = function( item_id, begin, end, on_success, on_error ) {};
+		/* Callbacks */
 
-	Private.item.delete = function( item_id, on_success, on_error ) {};
+		var own_on_success = function( value ) {
+			/* Callback */
+			if( 'function' === typeof on_success ) {
+				on_success( value );
+			}
+		};
 
+		var own_on_error = function( context ) {
+			/* Callback */
+			if( 'function' === typeof on_error ) {
+				on_error( context );
+			}
+		};
+
+		/* Request */
+
+		InDB.update( {
+			'data': data
+			, 'index': index
+			, 'key': key
+			, 'on_success': own_on_success
+			, 'on_error': own_on_error
+			, 'store': store
+		} );
+
+	};
+
+	Private.item.publish = function( item_id, on_success, on_error ) {
+		Private.item.update( item_id, { visible: true }, on_success, on_error );
+	};
+
+	Private.item.draft = function( item_id, on_success, on_error ) {
+		Private.item.update( item_id, { visible: false }, on_success, on_error );
+	};
+
+	Private.item.forward = function( item_id, count, on_success, on_error ) {
+		if( isNaN( count ) ) {
+			count = 1;
+		}
+		var value = function( old ) {
+			var type = typeof old;
+			if( 'number' === type ) {
+				return old + count;
+			}
+			if( 'string' === type ) {
+				var parsed = parseInt( old, 10 );
+				if( false === isNaN( parsed ) ) {
+					return parsed + count;
+				}
+			}
+			return 1;
+		};
+		Private.item.update( item_id, value, on_success, on_error );
+	};
+
+	Private.item.rollback = function( item_id, count, on_success, on_error ) {
+		if( isNaN( count ) ) {
+			count = 1;
+		}
+		var value = function( old ) {
+			var type = typeof old;
+			if( 'number' === type ) {
+				return old - count;
+			}
+			if( 'string' === type ) {
+				var parsed = parseInt( old, 10 );
+				if( false === isNaN( parsed ) ) {
+					return parsed - count;
+				}
+			}
+			return 1;
+		};
+		Private.item.update( item_id, value, on_success, on_error );
+	};
+
+	Private.item.clear = function( item_id, expecting, on_success, on_error ) {
+
+		/* Setup */
+
+		var store = Private.itemss.table_name;
+
+		/* Defaults */
+
+		var index = 'item_id';
+		var limit = null;
+		var direction = InDB.cursor.direction.next();
+		var key = item_id;
+		var left = null;
+		var right = null;
+		var left_inclusive = null;
+		var right_inclusive = null;
+
+		/* Callbacks */
+
+		var own_on_success = function( response ) {
+			results.push( reponse );
+		};
+
+		var own_on_complete = function() {
+			if( errors.length > 0 ) {
+				if( 'function' === typeof on_error ) {
+					on_error( error, results );
+				}
+			} else {
+				if( 'function' === typeof on_success ) {
+					on_success( results );
+				}
+			}
+
+		};
+
+		var own_on_error = function( error ) {
+			errors.push( error );
+		};
+
+		/* Request */
+
+		InDB.cursor.delete( {
+			'direction': direction
+			, 'expecting': expecting
+			, 'key': key
+			, 'index': index
+			, 'left': left
+			, 'left_inclusive': left_inclusive
+			, 'limit': limit
+			, 'on_success': own_on_success
+			, 'on_complete': own_on_complete
+			, 'on_error': own_on_error
+			, 'right': right
+			, 'right_inclusive': right_inclusive
+			, 'store': store
+		} );
+
+	};
+
+	Private.item.chronicle = function( item_id, on_success, on_error ) {
+
+		/* Setup */
+
+		var store = Private.rivisions.table_name;
+
+		/* Defaults */
+
+		var index = 'item_id';
+		var limit = null;
+		var direction = InDB.cursor.direction.next();
+		var key = item_id;
+		var left = null;
+		var right = null;
+		var left_inclusive = null;
+		var right_inclusive = null;
+		var expecting = null;
+
+		/* Callbacks */
+
+		var own_on_success = function( response ) {
+			results.push( reponse );
+		};
+
+		var own_on_complete = function() {
+			if( errors.length > 0 ) {
+				if( 'function' === typeof on_error ) {
+					on_error( error, results );
+				}
+			} else {
+				if( 'function' === typeof on_success ) {
+					on_success( results );
+				}
+			}
+
+		};
+
+		var own_on_error = function( error ) {
+			errors.push( error );
+		};
+
+		/* Request */
+
+		InDB.cursor.get( {
+			'direction': direction
+			, 'expecting': expecting
+			, 'key': key
+			, 'index': index
+			, 'left': left
+			, 'left_inclusive': left_inclusive
+			, 'limit': limit
+			, 'on_success': own_on_success
+			, 'on_complete': own_on_complete
+			, 'on_error': own_on_error
+			, 'properties': properties
+			, 'right': right
+			, 'right_inclusive': right_inclusive
+			, 'store': store
+		} );
+
+	};
+
+	Private.item.delete = function( item_id, on_success, on_error ) {
+
+		/* Setup */
+
+		var store = Private.itemss.table_name;
+
+		/* Defaults */
+
+		var index = null;
+		var key = item_id;
+
+		/* Callbacks */
+
+		var own_on_success = function( value ) {
+			/* Callback */
+			if( 'function' === typeof on_success ) {
+				on_success( value );
+			}
+		};
+
+		var own_on_error = function( context ) {
+			/* Callback */
+			if( 'function' === typeof on_error ) {
+				on_error( context );
+			}
+		};
+
+		/* Request */
+
+		InDB.delete( {
+			'index': index
+			, 'key': key
+			, 'on_success': own_on_success
+			, 'on_error': own_on_error
+			, 'store': store
+		} );
+
+	};
+
+	Private.item.expunge = function( revision_id, on_success, on_error ) {
+
+		/* Setup */
+
+		var store = Private.rivisions.table_name;
+
+		/* Defaults */
+
+		var index = 'item_id';
+		var limit = null;
+		var direction = InDB.cursor.direction.next();
+		var key = null;
+		var left = 0;
+		var right = revision_id;
+		var left_inclusive = true;
+		var right_inclusive = false;
+
+		var results = [];
+		var errors = [];
+		var expecting = null;
+
+		/* Callbacks */
+
+		var own_on_success = function( response ) {
+			results.push( reponse );
+		};
+
+		var own_on_complete = function() {
+			if( errors.length > 0 ) {
+				if( 'function' === typeof on_error ) {
+					on_error( error, results );
+				}
+			} else {
+				if( 'function' === typeof on_success ) {
+					on_success( results );
+				}
+			}
+
+		};
+
+		var own_on_error = function( error ) {
+			errors.push( error );
+		};
+
+		/* Request */
+	
+		InDB.cursor.delete( {
+			'direction': direction
+			, 'expecting': expecting
+			, 'key': key
+			, 'index': index
+			, 'left': left
+			, 'left_inclusive': left_inclusive
+			, 'limit': limit
+			, 'on_success': on_success
+			, 'on_complete': on_complete
+			, 'on_error': on_error
+			, 'right': right
+			, 'right_inclusive': right_inclusive
+			, 'store': store
+		} );
+
+	};
+
+	Private.item.coverup = function( revision_id, on_success, on_error ) {
+
+		/* Setup */
+
+		var store = Private.rivisions.table_name;
+
+		/* Defaults */
+
+		var index = 'item_id';
+		var limit = null;
+		var direction = InDB.cursor.direction.next();
+		var key = null;
+		var left = revision_id;
+		var right = null;
+		var left_inclusive = true;
+		var right_inclusive = null;
+
+		var results = [];
+		var errors = [];
+		var expecting = null;
+
+		/* Callbacks */
+
+		var own_on_success = function( response ) {
+			results.push( reponse );
+		};
+
+		var own_on_complete = function() {
+			if( errors.length > 0 ) {
+				if( 'function' === typeof on_error ) {
+					on_error( error, results );
+				}
+			} else {
+				if( 'function' === typeof on_success ) {
+					on_success( results );
+				}
+			}
+
+		};
+
+		var own_on_error = function( error ) {
+			errors.push( error );
+		};
+
+		/* Request */
+	
+		InDB.cursor.delete( {
+			'direction': direction
+			, 'expecting': expecting
+			, 'key': key
+			, 'index': index
+			, 'left': left
+			, 'left_inclusive': left_inclusive
+			, 'limit': limit
+			, 'on_success': on_success
+			, 'on_complete': on_complete
+			, 'on_error': on_error
+			, 'right': right
+			, 'right_inclusive': right_inclusive
+			, 'store': store
+		} );
+
+	};
 
 
 
@@ -379,10 +1127,9 @@ var Chronicle = ( function() {
 	Public.prototype.install = function( request ) {
 		var on_success = ( 'function' === typeof request.on_success ) ? request.on_success : Private.default.on_success;
 		var on_error = ( 'function' === typeof request.on_error ) ? request.on_error : Private.default.on_error;
-		var own_on_success = function( response ) {
-			Private.db = response;
+		var own_on_success = function() {
 			if( 'function' === typeof on_success ) {
-				on_success( request );
+				on_success();
 			}
 		};
 		Private.install( own_on_success, on_error );
