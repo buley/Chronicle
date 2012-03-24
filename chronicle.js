@@ -13,7 +13,7 @@ var Chronicle = ( function() {
 	/* Dependencies */
 	
 	var InDB;
-	var version = 1;
+	var version = 2;
 
 	var Private = function() {};
 
