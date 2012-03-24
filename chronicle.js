@@ -660,7 +660,7 @@ var Chronicle = ( function() {
 
 	};
 
-	Private.item.update = functioni( item_id, data, on_success, on_error ) {
+	Private.item.update = function( item_id, data, on_success, on_error ) {
 
 		/* Setup */
 
