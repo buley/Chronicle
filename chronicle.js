@@ -1,6 +1,6 @@
 /* Chronicle */
 
-/* Text content revision control with a concept of staging changes. */
+/* Object revision control backed by IndexedDB */
 
 var Chronicle = ( function() {
 
@@ -37,7 +37,7 @@ var Chronicle = ( function() {
 
 	Private.db = {};
 	
-	Private.database = Private.database || {}:
+	Private.database = Private.database || {};
 
 	Private.install = function( on_success, on_error ) {
 
@@ -227,9 +227,9 @@ var Chronicle = ( function() {
 			, 'left': left
 			, 'left_inclusive': left_inclusive
 			, 'limit': limit
-			, 'on_success': on_success
-			, 'on_complete': on_complete
-			, 'on_error': on_error
+			, 'on_success': own_on_success
+			, 'on_complete': own_on_complete
+			, 'on_error': own_on_error
 			, 'right': right
 			, 'right_inclusive': right_inclusive
 			, 'store': store
@@ -356,9 +356,9 @@ var Chronicle = ( function() {
 			, 'left': left
 			, 'left_inclusive': left_inclusive
 			, 'limit': limit
-			, 'on_success': on_success
-			, 'on_complete': on_complete
-			, 'on_error': on_error
+			, 'on_success': own_on_success
+			, 'on_complete': own_on_complete
+			, 'on_error': own_on_error
 			, 'right': right
 			, 'right_inclusive': right_inclusive
 			, 'store': store
@@ -467,8 +467,8 @@ var Chronicle = ( function() {
 
 		InDB.add( {
 			'data': data
-			, 'on_success': on_success
-			, 'on_error': on_error
+			, 'on_success': own_on_success
+			, 'on_error': own_on_error
 			, 'store': store
 		} );
 
@@ -507,7 +507,7 @@ var Chronicle = ( function() {
 		};
 
 		InDB.install( {
-			store: Private.itemss.table_name
+			store: Private.items.table_name
 			, indexes: indexes
 			, on_success: on_success
 			, on_error: on_error
@@ -519,7 +519,7 @@ var Chronicle = ( function() {
 
 		/* Setup */
 
-		var store = Private.itemss.table_name;
+		var store = Private.items.table_name;
 
 		var own_data = {
 			revision_id: 0
@@ -557,7 +557,7 @@ var Chronicle = ( function() {
 
 		/* Setup */
 
-		var store = Private.itemss.table_name;
+		var store = Private.items.table_name;
 
 		/* Defaults */
 
@@ -600,7 +600,7 @@ var Chronicle = ( function() {
 
 		/* Setup */
 
-		var store = Private.itemss.table_name;
+		var store = Private.items.table_name;
 
 		/* Defaults */
 
@@ -649,9 +649,9 @@ var Chronicle = ( function() {
 			, 'left': left
 			, 'left_inclusive': left_inclusive
 			, 'limit': limit
-			, 'on_success': on_success
-			, 'on_complete': on_complete
-			, 'on_error': on_error
+			, 'on_success': own_on_success
+			, 'on_complete': own_on_complete
+			, 'on_error': own_on_error
 			, 'right': right
 			, 'right_inclusive': right_inclusive
 			, 'store': store
@@ -664,7 +664,7 @@ var Chronicle = ( function() {
 
 		/* Setup */
 
-		var store = Private.itemss.table_name;
+		var store = Private.items.table_name;
 
 		/* Defaults */
 
@@ -674,14 +674,12 @@ var Chronicle = ( function() {
 		/* Callbacks */
 
 		var own_on_success = function( value ) {
-			/* Callback */
 			if( 'function' === typeof on_success ) {
 				on_success( value );
 			}
 		};
 
 		var own_on_error = function( context ) {
-			/* Callback */
 			if( 'function' === typeof on_error ) {
 				on_error( context );
 			}
@@ -752,7 +750,7 @@ var Chronicle = ( function() {
 
 		/* Setup */
 
-		var store = Private.itemss.table_name;
+		var store = Private.items.table_name;
 
 		/* Defaults */
 
@@ -874,7 +872,7 @@ var Chronicle = ( function() {
 
 		/* Setup */
 
-		var store = Private.itemss.table_name;
+		var store = Private.items.table_name;
 
 		/* Defaults */
 
@@ -884,14 +882,12 @@ var Chronicle = ( function() {
 		/* Callbacks */
 
 		var own_on_success = function( value ) {
-			/* Callback */
 			if( 'function' === typeof on_success ) {
 				on_success( value );
 			}
 		};
 
 		var own_on_error = function( context ) {
-			/* Callback */
 			if( 'function' === typeof on_error ) {
 				on_error( context );
 			}
@@ -963,9 +959,9 @@ var Chronicle = ( function() {
 			, 'left': left
 			, 'left_inclusive': left_inclusive
 			, 'limit': limit
-			, 'on_success': on_success
-			, 'on_complete': on_complete
-			, 'on_error': on_error
+			, 'on_success': own_on_success
+			, 'on_complete': own_on_complete
+			, 'on_error': own_on_error
 			, 'right': right
 			, 'right_inclusive': right_inclusive
 			, 'store': store
@@ -1027,9 +1023,9 @@ var Chronicle = ( function() {
 			, 'left': left
 			, 'left_inclusive': left_inclusive
 			, 'limit': limit
-			, 'on_success': on_success
-			, 'on_complete': on_complete
-			, 'on_error': on_error
+			, 'on_success': own_on_success
+			, 'on_complete': own_on_complete
+			, 'on_error': own_on_error
 			, 'right': right
 			, 'right_inclusive': right_inclusive
 			, 'store': store
