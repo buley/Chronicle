@@ -65,8 +65,11 @@ var Chronicle = ( function() {
 			}
 		};
 
-		Private.revisions.install( own_on_success, own_on_error );
-		Private.items.install( own_on_success, own_on_error );
+		var step_one = function() {
+			Private.revisions.install( own_on_success, own_on_error );
+		};
+	
+		Private.items.install( step_one, own_on_error );
 
 	};
 
