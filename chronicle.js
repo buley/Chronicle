@@ -96,9 +96,9 @@ var Chronicle = ( function() {
 				, 'incrementing': true
 				, 'unique': true
 			}
-			, 'item_id': false
 			, 'previous': false
 			, 'next': false
+			, 'modified': false
 		};
 
 		InDB.install( {
@@ -507,9 +507,7 @@ var Chronicle = ( function() {
 				, 'incrementing': true
 				, 'unique': true
 			}
-			, 'item_id': false
-			, 'previous': false
-			, 'next': false
+			, 'modified': false
 		};
 
 		InDB.install( {
