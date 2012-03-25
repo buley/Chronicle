@@ -12,9 +12,11 @@ var Chronicle = ( function() {
 
 	/* Dependencies */
 	
-	var InDB;
+
 	var version = 1;
+	var InDB;
 	var db_name = 'Chronicle';
+	var db_ver - 1;
 	var Private = function() {};
 
 	/* Defaults */
@@ -512,7 +514,7 @@ var Chronicle = ( function() {
 
 		InDB.install( {
 			store: Private.items.table_name
-			, database: "Chronicle"
+			, database: db_name
 			, indexes: indexes
 			, on_success: on_success
 			, on_error: on_error
@@ -1126,7 +1128,7 @@ var Chronicle = ( function() {
 	/* Classical prototypical inheritance pattern */
 
 	var Public = function() {
-		InDB = new IDB( { database: 'Chronicle', version: version } );
+		InDB = new IDB( { database: 'Chronicle', version: db_ver } );
 	};
 
 	/* Install */
