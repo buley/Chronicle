@@ -1119,8 +1119,8 @@ var Chronicle = ( function() {
 	/* returns the request object on success */
 	/* returns an error object on error */
 	Public.prototype.install = function( request ) {
-		var on_success = ( 'function' === typeof request.on_success ) ? request.on_success : Private.default.on_success;
-		var on_error = ( 'function' === typeof request.on_error ) ? request.on_error : Private.default.on_error;
+		var on_success = ( 'undefined' !== typeof request && 'function' === typeof request.on_success ) ? request.on_success : Private.default.on_success;
+		var on_error = ( 'undefined' !== typeof request && 'function' === typeof request.on_error ) ? request.on_error : Private.default.on_error;
 		var own_on_success = function() {
 			if( 'function' === typeof on_success ) {
 				on_success();
