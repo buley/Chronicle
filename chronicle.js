@@ -14,7 +14,7 @@ var Chronicle = ( function() {
 	
 	var InDB;
 	var version = 3;
-
+	var db_name = 'Chronicle';
 	var Private = function() {};
 
 	/* Defaults */
@@ -100,7 +100,8 @@ var Chronicle = ( function() {
 		};
 
 		InDB.install( {
-			store: Private.revisions.table_name
+			, database: 'Chronicle'
+			, store: Private.revisions.table_name
 			, indexes: indexes
 			, on_success: on_success
 			, on_error: on_error
@@ -167,6 +168,7 @@ var Chronicle = ( function() {
 			, 'on_error': own_on_error
 			, 'properties': properties
 			, 'store': store
+			, database: 'Chronicle'
 		} );
 
 	};
@@ -231,6 +233,7 @@ var Chronicle = ( function() {
 			, 'right': right
 			, 'right_inclusive': right_inclusive
 			, 'store': store
+			, database: 'Chronicle'
 		} );
 
 	};
@@ -360,6 +363,7 @@ var Chronicle = ( function() {
 			, 'right': right
 			, 'right_inclusive': right_inclusive
 			, 'store': store
+			, database: 'Chronicle'
 		} );
 
 	};
@@ -406,6 +410,7 @@ var Chronicle = ( function() {
 			, 'on_success': own_on_success
 			, 'on_error': own_on_error
 			, 'store': store
+			, database: 'Chronicle'
 		} );
 
 	};
@@ -468,6 +473,7 @@ var Chronicle = ( function() {
 			, 'on_success': own_on_success
 			, 'on_error': own_on_error
 			, 'store': store
+			, database: 'Chronicle'
 		} );
 
 	};
@@ -547,6 +553,7 @@ var Chronicle = ( function() {
 			, 'on_success': own_on_success
 			, 'on_error': own_on_error
 			, 'store': store
+			, database: 'Chronicle'
 		} );
 
 	};
@@ -589,6 +596,7 @@ var Chronicle = ( function() {
 			, 'on_error': own_on_error
 			, 'properties': properties
 			, 'store': store
+			, database: 'Chronicle'
 		} );
 
 
@@ -653,6 +661,7 @@ var Chronicle = ( function() {
 			, 'right': right
 			, 'right_inclusive': right_inclusive
 			, 'store': store
+			, database: 'Chronicle'
 		} );
 
 
@@ -692,6 +701,7 @@ var Chronicle = ( function() {
 			, 'on_success': own_on_success
 			, 'on_error': own_on_error
 			, 'store': store
+			, database: 'Chronicle'
 		} );
 
 	};
@@ -800,6 +810,7 @@ var Chronicle = ( function() {
 			, 'right': right
 			, 'right_inclusive': right_inclusive
 			, 'store': store
+			, database: 'Chronicle'
 		} );
 
 	};
@@ -862,6 +873,7 @@ var Chronicle = ( function() {
 			, 'right': right
 			, 'right_inclusive': right_inclusive
 			, 'store': store
+			, database: 'Chronicle'
 		} );
 
 	};
@@ -899,6 +911,7 @@ var Chronicle = ( function() {
 			, 'on_success': own_on_success
 			, 'on_error': own_on_error
 			, 'store': store
+			, database: 'Chronicle'
 		} );
 
 	};
@@ -963,6 +976,7 @@ var Chronicle = ( function() {
 			, 'right': right
 			, 'right_inclusive': right_inclusive
 			, 'store': store
+			, database: 'Chronicle'
 		} );
 
 	};
@@ -1027,6 +1041,7 @@ var Chronicle = ( function() {
 			, 'right': right
 			, 'right_inclusive': right_inclusive
 			, 'store': store
+			, database: 'Chronicle'
 		} );
 
 	};
