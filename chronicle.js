@@ -24,12 +24,12 @@ var Chronicle = ( function() {
 	Private.default = Private.default || {};
 
 	/* Default success callback */
-	Private.default.on_success = function() {
+	Private.default.on_success = function( response ) {
 		console.log( 'Success', response );
 	};
 
 	/* Default error callback */
-	Private.default.on_error = function() {
+	Private.default.on_error = function( response ) {
 		console.log( 'Error', response );
 	};
 
