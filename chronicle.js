@@ -100,7 +100,7 @@ var Chronicle = ( function() {
 		};
 
 		InDB.install( {
-			, database: 'Chronicle'
+			database: 'Chronicle'
 			, store: Private.revisions.table_name
 			, indexes: indexes
 			, on_success: on_success
@@ -512,6 +512,7 @@ var Chronicle = ( function() {
 
 		InDB.install( {
 			store: Private.items.table_name
+			, database: "Chronicle"
 			, indexes: indexes
 			, on_success: on_success
 			, on_error: on_error
