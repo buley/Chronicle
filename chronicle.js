@@ -69,9 +69,7 @@ var Chronicle = ( function() {
 			Private.items.install( own_on_success, own_on_error );
 		};
 		
-		Private.revisions.install( step_one, own_on_error );
-	
-
+		Private.revisions.install( step_one, own_on_error );	
 
 	};
 
@@ -110,8 +108,8 @@ var Chronicle = ( function() {
 			database: 'Chronicle'
 			, store: Private.revisions.table_name
 			, indexes: indexes
-			, on_success: on_success
-			, on_error: on_error
+			, on_success: own_on_success
+			, on_error: own_on_error
 		} );
 
 	};
@@ -519,9 +517,10 @@ var Chronicle = ( function() {
 			store: Private.items.table_name
 			, database: db_name
 			, indexes: indexes
-			, on_success: on_success
-			, on_error: on_error
+			, on_success: own_on_success
+			, on_error: own_on_error
 		} );
+
 
 	};
 
