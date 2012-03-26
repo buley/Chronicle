@@ -428,8 +428,7 @@ var Chronicle = ( function() {
 
 		/* Setup */
 
-		var store = request.store;
-		var data = request.data;
+		var store = Private.revisions.table_name;
 
 		if( 'undefined' === typeof data ) {
 			throw new Error( 'App.prototype.add: Data cannot be empty' );
