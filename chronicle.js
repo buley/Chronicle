@@ -66,10 +66,11 @@ var Chronicle = ( function() {
 		};
 
 		var step_one = function() {
-			Private.items.install( own_on_success, own_on_error );
+			Private.revisions.install( own_on_success, own_on_error );	
 		};
 		
-		Private.revisions.install( step_one, own_on_error );	
+		Private.items.install( step_one, own_on_error );
+
 
 	};
 
@@ -520,7 +521,6 @@ var Chronicle = ( function() {
 			, on_success: own_on_success
 			, on_error: own_on_error
 		} );
-
 
 	};
 
