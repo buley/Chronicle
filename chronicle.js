@@ -533,6 +533,7 @@ var Chronicle = ( function() {
 			revision_id: 0
 			, visible: false
 			, trashed: false
+			, modified: new Date().getTime()
 		};
 
 		/* Callbacks */
