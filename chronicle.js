@@ -452,8 +452,8 @@ var Chronicle = ( function() {
 				console.log( 'Private.revision.create success', value );
 			}
 			/* Callback */
-			if( 'function' == typeof request.on_success ) {
-				request.on_success( value );
+			if( 'function' == typeof on_success ) {
+				on_success( value );
 			}
 		};
 
@@ -463,8 +463,8 @@ var Chronicle = ( function() {
 				console.log( 'Private.revision.create error', context );
 			}
 			/* Callback */
-			if( 'function' == typeof request.on_error ) {
-				request.on_error( context );
+			if( 'function' == typeof on_error ) {
+				on_error( context );
 			}
 		};
 
