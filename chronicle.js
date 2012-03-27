@@ -446,7 +446,7 @@ var Chronicle = ( function() {
 
 		/* Callbacks */
 
-		var on_success = function( value ) {
+		var own_on_success = function( value ) {
 			/* Debug */
 			if( !!debug ) {
 				console.log( 'App.prototype.add success', value );
@@ -457,7 +457,7 @@ var Chronicle = ( function() {
 			}
 		};
 
-		var on_error = function( context ) {
+		var own_on_error = function( context ) {
 			/* Debug */
 			if( !!debug ) {
 				console.log( 'App.prototype.add error', context );
