@@ -431,12 +431,12 @@ var Chronicle = ( function() {
 		var store = Private.revisions.table_name;
 
 		if( 'undefined' === typeof data ) {
-			throw new Error( 'App.prototype.add: Data cannot be empty' );
+			throw new Error( 'Private.revision.create: Data cannot be empty' );
 			return;
 		}
 
 		if( 'undefined' === typeof store || null === store ) {
-			throw new Error( 'App.prototype.add: Store cannot be empty' );
+			throw new Error( 'Private.revision.create: Store cannot be empty' );
 			return null;
 		}
 
@@ -449,7 +449,7 @@ var Chronicle = ( function() {
 		var own_on_success = function( value ) {
 			/* Debug */
 			if( !!debug ) {
-				console.log( 'App.prototype.add success', value );
+				console.log( 'Private.revision.create success', value );
 			}
 			/* Callback */
 			if( 'function' == typeof request.on_success ) {
@@ -460,7 +460,7 @@ var Chronicle = ( function() {
 		var own_on_error = function( context ) {
 			/* Debug */
 			if( !!debug ) {
-				console.log( 'App.prototype.add error', context );
+				console.log( 'Private.revision.create error', context );
 			}
 			/* Callback */
 			if( 'function' == typeof request.on_error ) {
