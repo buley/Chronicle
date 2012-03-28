@@ -583,7 +583,7 @@ var Chronicle = ( function() {
 		var own_on_success = function( item_id ) {
 			console.log('Private.item.modify own_on_success',item_id);
 			if( 'function' == typeof on_success ) {
-				on_success( context );
+				on_success( item_id );
 			}		
 		};
 
