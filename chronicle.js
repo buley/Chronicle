@@ -375,56 +375,6 @@ var Chronicle = ( function() {
 
 	};
 
-	//TODO: should return a revision id
-	Private.revision.update = function( item_id, data, on_success, on_error ) {
-
-		/* Setup */
-
-		var store = Private.revisions.table_name;
-
-		/* Defaults */
-
-		var index = 'item_id';
-		var key = item_id;
-
-		//filters out any matching revisions that aren't the one we're looking for
-		var expecting = function( old ) {
-			return ( 'undefined' === old.id || null === old.id || item_id !== old.id ) ? false : old;
-		};
-
-		/* Callbacks */
-
-		var own_on_success = function( value ) {
-			/* Callback */
-			if( 'function' === typeof on_success ) {
-				on_success( value );
-			}
-		};
-
-		var own_on_error = function( context ) {
-			/* Callback */
-			if( 'function' === typeof on_error ) {
-				on_error( context );
-			}
-		};
-
-		/* Request */
-
-		InDB.update( {
-			'data': data
-			, 'index': index
-			, 'key': key
-			, 'expecting': expecting
-			, 'on_success': own_on_success
-			, 'on_error': own_on_error
-			, 'store': store
-			, database: 'Chronicle'
-		} );
-
-	};
-
-
-
 
 	Private.revision.create = function( item_id, data, on_success, on_error ) {
 
@@ -541,7 +491,7 @@ var Chronicle = ( function() {
 			console.log('Private.item.create own_on_success',item_id);
 			var inner_on_success = function( revision_id ) {
 				console.log('Private.item.create inner_on_success',revision_id);
-				Private.revision.activate( revision_id, on_success, on_error );
+				Private.revision.activate( item_id, revision_id, on_success, on_error );
 			};
 			Private.revision.create( item_id, data, inner_on_success, on_error );
 		};
@@ -683,7 +633,7 @@ var Chronicle = ( function() {
 
 		var own_on_success = function( revision_id ) {
 			console.log('Private.item.create own_on_success',item_id);
-			Private.revision.activate( revision_id, on_success, on_error );
+			Private.revision.activate( item_id, revision_id, on_success, on_error );
 		};
 
 		var own_on_error = function( context ) {
@@ -1301,10 +1251,11 @@ var Chronicle = ( function() {
 		Private.revision.update( item_id, own_on_success, on_error );
 	};
 
-	/* make a revision active, given a revision id, for an item with no active revisions */
+	/* make a revision active, given an item id and revision id, for an item with no active revisions */
 	/* returns the request object on_success */
 	/* returns an error object on error */
 	Public.prototype.activate = function( request ) {
+		var item_id = ( 'undefined' !== typeof request.item_id ) ? request.item_id : null;	
 		var revision_id = ( 'undefined' !== typeof request.revision_id ) ? request.revision_id : null;	
 		var on_success = ( 'function' === typeof request.on_success ) ? request.on_success : Private.default.on_success;
 		var on_error = ( 'function' === typeof request.on_error ) ? request.on_error : Private.default.on_error;
@@ -1313,14 +1264,15 @@ var Chronicle = ( function() {
 				on_success( request );
 			}
 		};
-		Private.revision.activate( revision_id, own_on_success, on_error );
+		Private.revision.activate( item_id, revision_id, own_on_success, on_error );
 	};
 
-	/* make a previous, non-active revision active given a revision id */
+	/* make a previous, non-active revision active given an item id and a revision id */
 	/* returns the request object on_success */
 	/* returns an error object on error */
 	Public.prototype.restore = function( request ) {
 		var revision_id = ( 'undefined' !== typeof request.revision_id ) ? request.revision_id : null;	
+		var item_id = ( 'undefined' !== typeof request.item_id ) ? request.item_id : null;	
 		var on_success = ( 'function' === typeof request.on_success ) ? request.on_success : Private.default.on_success;
 		var on_error = ( 'function' === typeof request.on_error ) ? request.on_error : Private.default.on_error;
 		var own_on_success = function() {
@@ -1328,14 +1280,15 @@ var Chronicle = ( function() {
 				on_success( request );
 			}
 		};
-		Private.revision.restore( revision_id, own_on_success, on_error );
+		Private.revision.restore( item_id, revision_id, own_on_success, on_error );
 	};
 
-	/* get a revision given a revision id; get the most recent revision given no revision id  */
+	/* get a revision given an item id and a revision id; get the most recent revision given no revision id  */
 	/* returns the request object on_success */
 	/* returns an error object on error */
 	Public.prototype.get = function( request ) {
 		var revision_id = ( 'undefined' !== typeof request.revision_id ) ? request.revision_id : null;	
+		var item_id = ( 'undefined' !== typeof request.item_id ) ? request.item_id : null;	
 		var on_success = ( 'function' === typeof request.on_success ) ? request.on_success : Private.default.on_success;
 		var on_error = ( 'function' === typeof request.on_error ) ? request.on_error : Private.default.on_error;
 		var own_on_success = function() {
@@ -1343,7 +1296,11 @@ var Chronicle = ( function() {
 				on_success( request );
 			}
 		};
-		Private.revision.get( revision_id, own_on_success, on_error );
+		if( 'undefined' !== typeof revision_id && null !== revision_id ) {
+			Private.revision.get( item_id, revision_id, own_on_success, on_error );
+		} else {
+			Private.item.get( item_id, own_on_success, on_error );
+		}
 	};
 
 	/* null out a revision given a revision id */
