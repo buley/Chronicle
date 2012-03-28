@@ -830,6 +830,7 @@ var Chronicle = ( function() {
 		var direction = InDB.cursor.direction.next();
 		var key = item_id;
 		var left = null;
+		var properties = null;
 		var right = null;
 		var left_inclusive = null;
 		var right_inclusive = null;
