@@ -374,8 +374,8 @@ var Chronicle = ( function() {
 
 	};
 
-
-	Private.revision.update = function( item_id, revision_id, data, on_success, on_error ) {
+	//TODO: should return a revision id
+	Private.revision.update = function( item_id, data, on_success, on_error ) {
 
 		/* Setup */
 
@@ -386,8 +386,9 @@ var Chronicle = ( function() {
 		var index = 'item_id';
 		var key = item_id;
 
+		//filters out any matching revisions that aren't the one we're looking for
 		var expecting = function( old ) {
-			return ( 'undefined' === old.id || null === old.id || revision_id !== old.id ) ? false : old;
+			return ( 'undefined' === old.id || null === old.id || item_id !== old.id ) ? false : old;
 		};
 
 		/* Callbacks */
