@@ -101,9 +101,8 @@ var Chronicle = ( function() {
 				, 'incrementing': true
 				, 'unique': true
 			}
-			, 'previous': false
-			, 'next': false
 			, 'modified': false
+			, 'created': false
 		};
 
 		InDB.install( {
@@ -387,7 +386,12 @@ var Chronicle = ( function() {
 
 		/* Defaults */
 	
-		//
+		var own_data = {
+			data: data
+			, modified: new Date().getTime()
+			, created: new Date().getTime()
+			, item_id: item_id
+		};
 
 		/* Callbacks */
 
@@ -416,7 +420,7 @@ var Chronicle = ( function() {
 		/* Request */
 
 		InDB.add( {
-			'data': data
+			'data': own_data
 			, 'on_success': own_on_success
 			, 'on_error': own_on_error
 			, 'store': store
@@ -473,7 +477,7 @@ var Chronicle = ( function() {
 
 		InDB.add( {
 			'data': data
-			, key: item_id
+			, key: 'id'
 			, index: 'id'
 			, 'on_success': own_on_success
 			, 'on_error': own_on_error
@@ -512,6 +516,7 @@ var Chronicle = ( function() {
 				, 'unique': true
 			}
 			, 'modified': false
+			, 'created': false
 		};
 
 		InDB.install( {
@@ -535,6 +540,7 @@ var Chronicle = ( function() {
 			, published: false
 			, trashed: false
 			, modified: new Date().getTime()
+			, created: new Date().getTime()
 		};
 
 		/* Callbacks */
@@ -720,7 +726,7 @@ var Chronicle = ( function() {
 		/* Callbacks */
 
 		var own_on_success = function( revision_id ) {
-			console.log('Private.item.create own_on_success',item_id,revision_id);
+			console.log('Private.item.update own_on_success',item_id,revision_id);
 			Private.revision.activate( item_id, revision_id, on_success, on_error );
 		};
 
