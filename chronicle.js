@@ -838,6 +838,9 @@ var Chronicle = ( function() {
 
 		/* Callbacks */
 
+		var errors = [];
+		var results = [];
+
 		var own_on_success = function( response ) {
 			results.push( reponse );
 		};
@@ -845,7 +848,7 @@ var Chronicle = ( function() {
 		var own_on_complete = function() {
 			if( errors.length > 0 ) {
 				if( 'function' === typeof on_error ) {
-					on_error( error, results );
+					on_error( errors, results );
 				}
 			} else {
 				if( 'function' === typeof on_success ) {
