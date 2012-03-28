@@ -477,8 +477,8 @@ var Chronicle = ( function() {
 
 		InDB.add( {
 			'data': data
-			, key: 'id'
-			, index: 'id'
+			, key: item_id
+			, index: null
 			, 'on_success': own_on_success
 			, 'on_error': own_on_error
 			, 'store': store
@@ -598,7 +598,7 @@ var Chronicle = ( function() {
 		InDB.update( {
 			'data': data
 			, key: item_id
-			, index: 'id'
+			, index: null
 			, 'on_success': own_on_success
 			, 'on_error': own_on_error
 			, 'store': store
