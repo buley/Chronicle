@@ -116,7 +116,7 @@ var Chronicle = ( function() {
 
 	};
 
-	Private.revision.purge = function() {
+	Private.revision.purge = function( item_id, revision_id, own_on_success, own_on_error ) {
 
 		/* Callbacks */
 
@@ -134,7 +134,7 @@ var Chronicle = ( function() {
 
 		/* Request */
 
-		Private.revision.update( revision_id, { data: null }, own_on_success, own_on_error );
+		Private.revision.modify( item_id, revision_id, { data: null }, own_on_success, own_on_error );
 
 	};
 
@@ -263,7 +263,7 @@ var Chronicle = ( function() {
 
 		/* Request */
 
-		Private.revision.update( item_id, revision_id, { trashed: true }, own_on_success, own_on_error );
+		Private.revision.modify( item_id, revision_id, { trashed: true }, own_on_success, own_on_error );
 
 	};
 
@@ -285,7 +285,7 @@ var Chronicle = ( function() {
 
 		/* Request */
 
-		Private.revision.update( item_id, revision_id, { trashed: false }, own_on_success, own_on_error );
+		Private.revision.modify( item_id, revision_id, { trashed: false }, own_on_success, own_on_error );
 
 	};
 
@@ -425,6 +425,65 @@ var Chronicle = ( function() {
 
 	};
 
+	Private.revision.modify = function( item_id, revision_id, data, on_success, on_error ) {
+
+		/* Setup */
+
+		var store = Private.revisions.table_name;
+
+		if( 'undefined' === typeof data ) {
+			throw new Error( 'Private.revision.modify: Data cannot be empty' );
+			return;
+		}
+
+		if( 'undefined' === typeof store || null === store ) {
+			throw new Error( 'Private.revision.modify: Store cannot be empty' );
+			return null;
+		}
+
+		/* Defaults */
+	
+		//
+
+		/* Callbacks */
+
+		var own_on_success = function( value ) {
+			/* Debug */
+			if( !!debug ) {
+				console.log( 'Private.revision.modify success', value );
+			}
+			/* Callback */
+			if( 'function' == typeof on_success ) {
+				on_success( value );
+			}
+		};
+
+		var own_on_error = function( context ) {
+			/* Debug */
+			if( !!debug ) {
+				console.log( 'Private.revision.modify error', context );
+			}
+			/* Callback */
+			if( 'function' == typeof on_error ) {
+				on_error( context );
+			}
+		};
+
+		/* Request */
+
+		InDB.add( {
+			'data': data
+			, key: item_id
+			, index: 'id'
+			, 'on_success': own_on_success
+			, 'on_error': own_on_error
+			, 'store': store
+			, database: 'Chronicle'
+		} );
+
+	};
+
+
 
 	/* Items */
 
@@ -483,7 +542,7 @@ var Chronicle = ( function() {
 		var own_on_success = function( item_id ) {
 			console.log('Private.item.create own_on_success',item_id);
 			var inner_on_success = function( revision_id ) {
-				console.log('Private.item.create inner_on_success',revision_id);
+				console.log('Private.item.create inner_on_success',item_id,revision_id);
 				Private.revision.activate( item_id, revision_id, on_success, on_error );
 			};
 			Private.revision.create( item_id, data, inner_on_success, on_error );
@@ -661,7 +720,7 @@ var Chronicle = ( function() {
 		/* Callbacks */
 
 		var own_on_success = function( revision_id ) {
-			console.log('Private.item.create own_on_success',item_id);
+			console.log('Private.item.create own_on_success',item_id,revision_id);
 			Private.revision.activate( item_id, revision_id, on_success, on_error );
 		};
 
