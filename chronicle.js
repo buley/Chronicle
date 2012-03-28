@@ -309,7 +309,7 @@ var Chronicle = ( function() {
 
 		Private.revision.get( revision_id, function( get_result ) {
 				var item_id = get_result.id;
-				Private.item.update( item_id, { revision: revision_id }, own_on_success, own_on_error ); 
+				Private.item.update( item_id, { revision_id: revision_id, modified: new Date().getTime() }, own_on_success, own_on_error ); 
 		}, function( get_error ) {
 				if( 'function' === typeof own_on_error ) {
 					own_on_error( get_error );
