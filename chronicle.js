@@ -289,7 +289,7 @@ var Chronicle = ( function() {
 
 	};
 
-	Private.revision.activate = function( revision_id, on_success, on_error ) {
+	Private.revision.activate = function( item_id, revision_id, on_success, on_error ) {
 
 		/* Callbacks */
 
