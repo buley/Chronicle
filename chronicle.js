@@ -432,43 +432,40 @@ var Chronicle = ( function() {
 		var store = Private.revisions.table_name;
 
 		if( 'undefined' === typeof data ) {
-			throw new Error( 'App.prototype.add: Data cannot be empty' );
+			throw new Error( 'Private.revision.create: Data cannot be empty' );
 			return;
 		}
 
 		if( 'undefined' === typeof store || null === store ) {
-			throw new Error( 'App.prototype.add: Store cannot be empty' );
+			throw new Error( 'Private.revision.create: Store cannot be empty' );
 			return null;
 		}
 
 		/* Defaults */
-
-		var index = request.index;
-		index = ( 'undefined' !== typeof index ) ? index : null;
-		var key = request.key;
-		key = ( 'undefined' !== typeof key ) ? key : null;
+	
+		//
 
 		/* Callbacks */
 
-		var on_success = function( value ) {
+		var own_on_success = function( value ) {
 			/* Debug */
 			if( !!debug ) {
-				console.log( 'App.prototype.add success', value );
+				console.log( 'Private.revision.create success', value );
 			}
 			/* Callback */
-			if( 'function' == typeof request.on_success ) {
-				request.on_success( value );
+			if( 'function' == typeof on_success ) {
+				on_success( value );
 			}
 		};
 
-		var on_error = function( context ) {
+		var own_on_error = function( context ) {
 			/* Debug */
 			if( !!debug ) {
-				console.log( 'App.prototype.add error', context );
+				console.log( 'Private.revision.create error', context );
 			}
 			/* Callback */
-			if( 'function' == typeof request.on_error ) {
-				request.on_error( context );
+			if( 'function' == typeof on_error ) {
+				on_error( context );
 			}
 		};
 
@@ -834,12 +831,16 @@ var Chronicle = ( function() {
 		var direction = InDB.cursor.direction.next();
 		var key = item_id;
 		var left = null;
+		var properties = null;
 		var right = null;
 		var left_inclusive = null;
 		var right_inclusive = null;
 		var expecting = null;
 
 		/* Callbacks */
+
+		var errors = [];
+		var results = [];
 
 		var own_on_success = function( response ) {
 			results.push( reponse );
@@ -848,7 +849,7 @@ var Chronicle = ( function() {
 		var own_on_complete = function() {
 			if( errors.length > 0 ) {
 				if( 'function' === typeof on_error ) {
-					on_error( error, results );
+					on_error( errors, results );
 				}
 			} else {
 				if( 'function' === typeof on_success ) {
