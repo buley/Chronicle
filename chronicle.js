@@ -530,7 +530,7 @@ var Chronicle = ( function() {
 
 		var own_data = {
 			revision_id: 0
-			, visible: false
+			, published: false
 			, trashed: false
 			, modified: new Date().getTime()
 		};
@@ -699,11 +699,11 @@ var Chronicle = ( function() {
 	};
 
 	Private.item.publish = function( item_id, on_success, on_error ) {
-		Private.item.update( item_id, { visible: true }, on_success, on_error );
+		Private.item.update( item_id, { published: new Date().getTime() }, on_success, on_error );
 	};
 
 	Private.item.draft = function( item_id, on_success, on_error ) {
-		Private.item.update( item_id, { visible: false }, on_success, on_error );
+		Private.item.update( item_id, { published: false }, on_success, on_error );
 	};
 
 	Private.item.forward = function( item_id, count, on_success, on_error ) {
