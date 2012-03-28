@@ -307,14 +307,7 @@ var Chronicle = ( function() {
 
 		/* Request */
 
-		Private.revision.get( revision_id, function( get_result ) {
-				var item_id = get_result.id;
-				Private.item.update( item_id, { revision_id: revision_id, modified: new Date().getTime() }, own_on_success, own_on_error ); 
-		}, function( get_error ) {
-				if( 'function' === typeof own_on_error ) {
-					own_on_error( get_error );
-				}
-		} );
+		Private.item.modify( item_id, { revision_id: revision_id, modified: new Date().getTime() }, own_on_success, own_on_error ); 
 
 	};
 
@@ -513,6 +506,42 @@ var Chronicle = ( function() {
 		} );
 
 	};
+
+	Private.item.modify = function( item_id, data, on_success, on_error ) {	
+
+		/* Setup */
+
+		var store = Private.items.table_name;
+
+		/* Callbacks */
+
+		var own_on_success = function( item_id ) {
+			console.log('Private.item.modify own_on_success',item_id);
+			if( 'function' == typeof on_success ) {
+				on_success( context );
+			}		
+		};
+
+		var own_on_error = function( context ) {
+			if( 'function' == typeof on_error ) {
+				on_error( context );
+			}
+		};
+
+		/* Request */
+
+		InDB.update( {
+			'data': data
+			, key: item_id
+			, index: 'id'
+			, 'on_success': own_on_success
+			, 'on_error': own_on_error
+			, 'store': store
+			, database: 'Chronicle'
+		} );
+
+	};
+
 
 	Private.item.get = function( item_id, on_success, on_error ) {
 
