@@ -537,7 +537,9 @@ var Chronicle = ( function() {
 		/* Callbacks */
 
 		var own_on_success = function( item_id ) {
+			console.log('Private.item.create own_on_success',item_id);
 			var inner_on_success = function( revision_id ) {
+				console.log('Private.item.create inner_on_success',revision_id);
 				Private.revision.activate( revision_id, on_success, on_error );
 			};
 			Private.revision.create( item_id, data, inner_on_success, on_error );
