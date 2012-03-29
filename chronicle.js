@@ -16,7 +16,7 @@ var Chronicle = ( function() {
 	var version = 1;
 	var InDB;
 	var debug = true;
-	var db_name = db_name;
+	var db_name = 'Chronicle';
 	var db_ver = 1;
 	var Private = function() {};
 
