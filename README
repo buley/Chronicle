@@ -1,16 +1,28 @@
+/* Install */
+/* Creates the required IndexedDB object stores
+ * Returns nothing on success. */
+
+Chronicle.install( { on_success: function() {
+	console.log('Chronicle.create success' );
+}, on_error: function( res ) {
+	console.log('Chronicle.create error', res );
+} } );
+
+
 /* Create */
 /* Creates a new item given data.
- * Returns its item_id on success. */
+ * Returns the new item object on success. */
 
-Chronicle.create( { 'data': { 'one': 0,'two': 0 }, on_success: function( item_id ) {
-	console.log('Chronicle.create success item_id', item_id );
+Chronicle.create( { 'data': { 'one': 0,'two': 0 }, on_success: function( item_id, revision_id ) {
+	console.log('Chronicle.create success item_id', item_id, 'revision_id', revision_id );
 }, on_error: function( res ) {
 	console.log('Chronicle.create error', res );
 } } );
 
 
 /* Delete */
-/* Deletes an item given an item_id.
+/* Purge an item and all its revisions given an item_id.
+ * Overloaded, purges a single revision given an item_id and revision_id.
  * Returns nothing on success. */
 
 Chronicle.delete( { 'item_id': 1, on_success: function() {
@@ -23,9 +35,10 @@ Chronicle.delete( { 'item_id': 1, on_success: function() {
 /* List */
 /* Lists items given optional beginning and ending created, modified and id parameters.
  * Overloaded, lists revisions for an item given an item id.
+ * Takes an optional descending boolean (default is false)
  * Returns each item object in succession on_success or an array of item objects on complete. */
 
-Chronicle.list( { item_id: 1, begin_modified: null, end_modified: null, begin_id: null, end_id: null, filter: function(row){
+Chronicle.list( { item_id: 1, begin: null, end: null, index: 'modified', descending: true, filter: function(row){
 	console.log('Chronicle.list filter', row );
         return true;
 }, on_complete: function( res ) {
@@ -54,7 +67,7 @@ Chronicle.clear( { 'item_id': 1, filter: function(row){
 /* Forward */
 /* Moves the active item revision forward by one (if not currently at the last revision) given an item_id.
  * moves n revisions forward given a count
- * Returns nothing on success */
+ * Returns the newly active revision object on success */
 
 Chronicle.forward( { 'item_id': 1, count: 1, on_success: function( res ) {
 	console.log('Chronicle.forward success', res );
@@ -66,7 +79,7 @@ Chronicle.forward( { 'item_id': 1, count: 1, on_success: function( res ) {
 /* Rollback */
 /* Moves them the active revision backward by one (if not currently at the first revision) given an item_id.
  * Moves n revisions forward given a count.
- * Returns nothing on success. */
+ * Returns the newly active revision object on success. */
 
 Chronicle.rollback( { 'item_id': 1, count: 1, on_success: function() {
 	console.log( 'Chronicle.forward success' );
@@ -79,16 +92,16 @@ Chronicle.rollback( { 'item_id': 1, count: 1, on_success: function() {
 /* Changes the active revision for an item (if not currently on that revision) given an item_id and a revision_id. 
  * Returns the newly active revision on success. */
 
-Chronicle.activate( { 'item_id': 8, filter: function(){}, on_success: function( active_revision ) {
+Chronicle.activate( { item_id: 1, revision_id: 1, on_success: function( active_revision ) {
 	console.log( 'Chronicle.activate success active_revision', active_revision );
 }, on_error: function( res ) {
 	console.log('Chronicle.activate error', res );
 } } );
 
 
-/* Save *//
+/* Save */
 /* Creates a new revision for an item given an item_id and data, but does not activate it. 
- * Returns the revision_id on success. */
+ * Returns the new, non-active revision object on success. */
 
 Chronicle.save( { 'item_id': 1, data: { foo: 'bar' }, on_success: function( revision_id ) {
 	console.log( 'Chronicle.save success revision_id', revision_id );
@@ -99,7 +112,7 @@ Chronicle.save( { 'item_id': 1, data: { foo: 'bar' }, on_success: function( revi
 
 /* Update *//
 /* Creates a new revision for an item, given an item_id and data, and activates it. 
- * Returns the revision_id on success. */
+ * Returns the revision object on success. */
 
 Chronicle.update( { 'item_id': 1, data: { foo: 'bar' }, on_success: function( revision_id ) {
 	console.log( 'Chronicle.save success revision_id', revision_id );
@@ -136,7 +149,7 @@ Chronicle.read( { 'item_id': 1, revision_id: 1, filter: function( row ) {
 /* Trashes a revision for an item given an item_id and revision_id, making it visible in Chronicle.list(). 
  * Returns nothing on success. */ 
 
-Chronicle.restore( { 'item_id': 1, filter: function( row ) {
+Chronicle.trash( { 'item_id': 1, filter: function( row ) {
 	console.log( 'Chronicle.restore filter row', row );
 }, on_success: function() {
 	console.log( 'Chronicle.restore success' );
@@ -156,19 +169,6 @@ Chronicle.restore( { 'item_id': 1, filter: function( row ) {
 }, on_error: function( res ) {
 	console.log( 'Chronicle.restore error', res );
 } } );
-
-/* Purge */
-/* Permanently removes a revision for an item given an item_id and revision_id.
- * Returns nothing on success. */ 
-
-Chronicle.purge( { 'item_id': 1, filter: function( row ) {
-	console.log( 'Chronicle.restore filter row', row );
-}, on_success: function() {
-	console.log( 'Chronicle.restore success' );
-}, on_error: function( res ) {
-	console.log( 'Chronicle.restore error', res );
-} } );
-
 
 /* Coverup */
 /* Purges subsequent revisions given a revision_id to start from and a count.
@@ -199,10 +199,10 @@ Chronicle.expunge( { item_id: 1, revision_id: 1, count: 3, filter: function( row
 
 
 /* Compare */
-/* Provides the difference of two objects.
+/* Provides the difference of two revisions given an item_id, a base revision_id and a comparison revision_id.
  * Returns the difference on success. */
 
-Chronicle.compare( { base: { foo: 'bar' }, comparison: { foo: 'baz' }, on_success: function() {
+Chronicle.compare( { item_id: 1, base: 2, comparison: 3, on_success: function() {
 	console.log( 'Chronicle.restore success' );
 }, on_error: function( res ) {
 	console.log( 'Chronicle.restore error', res );
