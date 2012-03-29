@@ -1,11 +1,13 @@
+
+
 /* Install */
 /* Creates the required IndexedDB object stores
  * Returns nothing on success. */
 
 Chronicle.install( { on_success: function() {
-	console.log('Chronicle.create success' );
+	console.log('Chronicle.install success' );
 }, on_error: function( res ) {
-	console.log('Chronicle.create error', res );
+	console.log('Chronicle.install error', res );
 } } );
 
 
@@ -82,9 +84,9 @@ Chronicle.forward( { 'item_id': 1, count: 1, on_success: function( res ) {
  * Returns the newly active revision object on success. */
 
 Chronicle.rollback( { 'item_id': 1, count: 1, on_success: function() {
-	console.log( 'Chronicle.forward success' );
+	console.log( 'Chronicle.rollback success' );
 }, on_error: function( res ) {
-	console.log('Chronicle.forward error', res );
+	console.log('Chronicle.rollback error', res );
 } } );
 
 
@@ -115,9 +117,9 @@ Chronicle.save( { 'item_id': 1, data: { foo: 'bar' }, on_success: function( revi
  * Returns the revision object on success. */
 
 Chronicle.update( { 'item_id': 1, data: { foo: 'bar' }, on_success: function( revision_id ) {
-	console.log( 'Chronicle.save success revision_id', revision_id );
+	console.log( 'Chronicle.update success revision_id', revision_id );
 }, on_error: function( res ) {
-	console.log('Chronicle.save error', res );
+	console.log('Chronicle.update error', res );
 }  } );
 
 
@@ -128,20 +130,20 @@ Chronicle.update( { 'item_id': 1, data: { foo: 'bar' }, on_success: function( re
 
 //active revision
 Chronicle.read( { 'item_id': 1, filter: function( row ) {
-	console.log( 'Chronicle.restore filter row', row );
+	console.log( 'Chronicle.read filter row', row );
 }, on_success: function() {
-	console.log( 'Chronicle.restore success' );
+	console.log( 'Chronicle.read success' );
 }, on_error: function( res ) {
-	console.log( 'Chronicle.restore error', res );
+	console.log( 'Chronicle.read error', res );
 } } );
 
 //specific revision
 Chronicle.read( { 'item_id': 1, revision_id: 1, filter: function( row ) {
-	console.log( 'Chronicle.restore filter row', row );
+	console.log( 'Chronicle.read filter row', row );
 }, on_success: function() {
-	console.log( 'Chronicle.restore success' );
+	console.log( 'Chronicle.read success' );
 }, on_error: function( res ) {
-	console.log( 'Chronicle.restore error', res );
+	console.log( 'Chronicle.read error', res );
 } } );
 
 
@@ -150,11 +152,11 @@ Chronicle.read( { 'item_id': 1, revision_id: 1, filter: function( row ) {
  * Returns nothing on success. */ 
 
 Chronicle.trash( { 'item_id': 1, filter: function( row ) {
-	console.log( 'Chronicle.restore filter row', row );
+	console.log( 'Chronicle.trash filter row', row );
 }, on_success: function() {
-	console.log( 'Chronicle.restore success' );
+	console.log( 'Chronicle.trash success' );
 }, on_error: function( res ) {
-	console.log( 'Chronicle.restore error', res );
+	console.log( 'Chronicle.trash error', res );
 } } );
 
 
@@ -176,11 +178,11 @@ Chronicle.restore( { 'item_id': 1, filter: function( row ) {
  * Returns nothing on success. */ 
 
 Chronicle.coverup( { item_id: 1, revision_id: 1, count: 3, filter: function( row ) {
-	console.log( 'Chronicle.restore filter row', row );
+	console.log( 'Chronicle.coverup filter row', row );
 }, on_success: function() {
-	console.log( 'Chronicle.restore success' );
+	console.log( 'Chronicle.coverup success' );
 }, on_error: function( res ) {
-	console.log( 'Chronicle.restore error', res );
+	console.log( 'Chronicle.coverup error', res );
 } } );
 
 
@@ -190,11 +192,11 @@ Chronicle.coverup( { item_id: 1, revision_id: 1, count: 3, filter: function( row
  * Returns nothing on success. */ 
 
 Chronicle.expunge( { item_id: 1, revision_id: 1, count: 3, filter: function( row ) {
-	console.log( 'Chronicle.restore filter row', row );
+	console.log( 'Chronicle.expunge filter row', row );
 }, on_success: function() {
-	console.log( 'Chronicle.restore success' );
+	console.log( 'Chronicle.expunge success' );
 }, on_error: function( res ) {
-	console.log( 'Chronicle.restore error', res );
+	console.log( 'Chronicle.expunge error', res );
 } } );
 
 
@@ -203,7 +205,7 @@ Chronicle.expunge( { item_id: 1, revision_id: 1, count: 3, filter: function( row
  * Returns the difference on success. */
 
 Chronicle.compare( { item_id: 1, base: 2, comparison: 3, on_success: function() {
-	console.log( 'Chronicle.restore success' );
+	console.log( 'Chronicle.compare success' );
 }, on_error: function( res ) {
-	console.log( 'Chronicle.restore error', res );
+	console.log( 'Chronicle.compare error', res );
 } } );
