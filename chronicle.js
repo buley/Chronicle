@@ -952,14 +952,20 @@ var Chronicle = ( function() {
 
 			/* Request */
 
-			InDB.delete( {
-				index: 'item_id'
+			InDB.cursor.delete( {
+				direction: InDB.cursor.direction.next()
+				, expecting: null
 				, key: item_id
+				, index: 'item_id'
+				, left: 0
+				, left_inclusive: true
+				, limit: null
 				, on_success: result_on_success
-				, on_error: own_on_error
 				, on_complete: result_on_complete
-				, store: Private.revisions.table_name
-				, database: db_name
+				, on_error: own_on_error
+				, right: null
+				, right_inclusive: null
+				, store: store
 			} );
 
 		};
