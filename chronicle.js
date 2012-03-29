@@ -742,14 +742,6 @@ var Chronicle = ( function() {
 		
 	};
 
-	Private.item.publish = function( item_id, on_success, on_error ) {
-		Private.item.modify( item_id, { published: new Date().getTime() }, on_success, on_error );
-	};
-
-	Private.item.draft = function( item_id, on_success, on_error ) {
-		Private.item.modify( item_id, { published: false }, on_success, on_error );
-	};
-
 	Private.item.forward = function( item_id, count, on_success, on_error ) {
 		if( isNaN( count ) ) {
 			count = 1;
@@ -851,11 +843,10 @@ var Chronicle = ( function() {
 
 	};
 
-	Private.item.list = function( on_success, on_error ) {
-		//TODO: List most recent items by modified time
-	};
+	//returns all items
+	//if given item_id, returns all revisiosn for that item
 
-	Private.item.chronicle = function( item_id, on_success, on_error ) {
+	Private.item.list = function( item_id, on_success, on_error ) {
 
 		/* Setup */
 
@@ -1169,7 +1160,9 @@ var Chronicle = ( function() {
 	/* Classical prototypical inheritance pattern */
 
 	var Public = function() {
-		InDB = new IDB( { database: 'Chronicle', version: db_ver } );
+		InDB = new IDB( { database: db_name, version: db_ver, on_upgrade_needed: function() {
+			Public.prototype.install();
+		} } );
 	};
 
 	/* Install */
@@ -1192,54 +1185,71 @@ var Chronicle = ( function() {
 	/* Item methods */
 
 	/* create a new item given a data object */
-	/* returns the request object and a revision id on success */
+	/* returns the item object (w/item_id and revision_id attributes) on success */
 	/* returns an error object on error */
 	Public.prototype.create = function( request ) {
 		var data = ( 'undefined' !== typeof request.data ) ? request.data : null;
 		var on_success = ( 'function' === typeof request.on_success ) ? request.on_success : Private.default.on_success;
 		var on_error = ( 'function' === typeof request.on_error ) ? request.on_error : Private.default.on_error;
-		var own_on_success = function( revision_id ) {
+		var own_on_success = function( item_id, revision_id ) {
 			if( 'function' === typeof on_success ) {
-				on_success( request, revision_id );
+				on_success( item_id, revision_id );
 			}
 		};
 		Private.item.create( data, own_on_success, on_error );
 	};
 
-	/* delete an item given an item id */
-	/* returns the request object on_success */
+	/* delete (perminant purge) an item given an item id */
+	/* overloaded, delete (purge) a revision given a item_id and revision_id */
+	/* returns nothing on_success */
 	/* returns an error object on error */
 	Public.prototype.delete = function( request ) {
 		var item_id = ( 'undefined' !== typeof request.item_id ) ? request.item_id : null;
+		var revision_id = ( 'undefined' !== typeof request.revision_id ) ? request.revision_id : null;
 		var on_success = ( 'function' === typeof request.on_success ) ? request.on_success : Private.default.on_success;
 		var on_error = ( 'function' === typeof request.on_error ) ? request.on_error : Private.default.on_error;
 		var own_on_success = function() {
 			if( 'function' === typeof on_success ) {
-				on_success( request );
+				on_success();
 			}
 		};
-		Private.item.delete( item_id, own_on_success, on_error );
+		if( null !== revision_id ) {
+			Private.revision.delete( item_id, revision_id, own_on_success, on_error );
+		} else {
+			Private.item.delete( item_id, own_on_success, on_error );
+		}
 	};
 
-	/* get an item's revisions given an item id */
-	/* returns an array of revision objects on success */
-	/* returns an error object on error */
-	Public.prototype.chronicle = function( request ) {
+	/* get an items
+	 * overloaded, get an item's revisions given an item id
+	 * requires an index (modified, created, id) 
+	 * takes an optional filter function
+	 * returns an array of either item or revision objects on complete 
+	 * returns each item or revision object on success 
+	 * returns an error object on error */
+	Public.prototype.list = function( request ) {
 		var item_id = ( 'undefined' !== typeof request.item_id ) ? request.item_id : null;
 		var on_success = ( 'function' === typeof request.on_success ) ? request.on_success : Private.default.on_success;
 		var on_error = ( 'function' === typeof request.on_error ) ? request.on_error : Private.default.on_error;
-		var begin = ( 'number' === typeof request.begin ) ? request.begin : null;
+		var begin = ( 'number' === typeof request.begin ) ? request.begin_id : null;
 		var end = ( 'number' === typeof request.end ) ? request.end : null;
+		var index = ( 'string' === typeof request.index ) ? request.index : null;
+		var descending = ( 'boolean' === typeof request.descending ) ? request.descending : false;
+		var filter = ( 'function' === typeof request.filter ) ? request.filter : null;
 		var own_on_success = function() {
 			if( 'function' === typeof on_success ) {
 				on_success( request );
 			}
 		};
-		Private.item.chronicle( item_id, begin, end, own_on_success, on_error );
+		if( null !== item_id ) {
+			Private.items.list( item_id, index, begin, end, filter, descending, own_on_success, on_error );
+		} else {
+			Private.item.chronicle( item_id, index, begin, end, filter, descending, own_on_success, on_error );
+		}
 	};
 
 	/* delete all revisions for an item given an item id */
-	/* returns the request object on_success */
+	/* returns nothing on_success */
 	/* returns an error object on error */
 	Public.prototype.clear = function( request ) {
 		var item_id = ( 'undefined' !== typeof request.item_id ) ? request.item_id : null;
@@ -1254,16 +1264,16 @@ var Chronicle = ( function() {
 	};
 
 	/* activate the next revision for an item given an item id; active nth next revision for an item given an item id and a count integer */
-	/* returns the newly active revision on_success */
+	/* returns the newly active revision object on_success */
 	/* returns an error object on error */
 	Public.prototype.forward = function( request ) {
 		var item_id = ( 'undefined' !== typeof request.item_id ) ? request.item_id : null;
 		var count = ( 'number' === typeof request.count ) ? request.count : null;
 		var on_success = ( 'function' === typeof request.on_success ) ? request.on_success : Private.default.on_success;
 		var on_error = ( 'function' === typeof request.on_error ) ? request.on_error : Private.default.on_error;
-		var own_on_success = function() {
+		var own_on_success = function( revision ) {
 			if( 'function' === typeof on_success ) {
-				on_success( request );
+				on_success( revision );
 			}
 		};
 		Private.item.forward( item_id, count, own_on_success, on_error );
@@ -1277,58 +1287,41 @@ var Chronicle = ( function() {
 		var count = ( 'number' === typeof request.count ) ? request.count : null;
 		var on_success = ( 'function' === typeof request.on_success ) ? request.on_success : Private.default.on_success;
 		var on_error = ( 'function' === typeof request.on_error ) ? request.on_error : Private.default.on_error;
-		var own_on_success = function() {
+		var own_on_success = function( revision ) {
 			if( 'function' === typeof on_success ) {
-				on_success( request );
+				on_success( revision );
 			}
 		};
 		Private.item.rollback( item_id, count, own_on_success, on_error );
 	};
 
-	/* make the active revision non-public given an item id */
-	/* returns the request object on_success */
-	/* returns an error object on error */
-	Public.prototype.draft = function( request ) {
-		var item_id = ( 'undefined' !== typeof request.item_id ) ? request.item_id : null;
-		var on_success = ( 'function' === typeof request.on_success ) ? request.on_success : Private.default.on_success;
-		var on_error = ( 'function' === typeof request.on_error ) ? request.on_error : Private.default.on_error;
-		var own_on_success = function() {
-			if( 'function' === typeof on_success ) {
-				on_success( request );
-			}
-		};
-		Private.item.draft( item_id, own_on_success, on_error );
-	};
-
-	/* make the active revision public given an item id */
-	/* returns the request object on_success */
-	/* returns an error object on error */
-	Public.prototype.publish = function( request ) {
-		var item_id = ( 'undefined' !== typeof request.item_id ) ? request.item_id : null;
-		var on_success = ( 'function' === typeof request.on_success ) ? request.on_success : Private.default.on_success;
-		var on_error = ( 'function' === typeof request.on_error ) ? request.on_error : Private.default.on_error;
-		var own_on_success = function() {
-			if( 'function' === typeof on_success ) {
-				on_success( request );
-			}
-		};
-		Private.item.publish( item_id, own_on_success, on_error );
-	};
-
-
-	/* Revision methods */
-
-	/* store a new revision for an existing published item given an item id */
-	/* returns the request object on_success */
+	/* store a new revision for an existing published item given an item id but do not activate it */
+	/* returns the revison objectd on_success */
 	/* returns an error object on error */
 	Public.prototype.save = function( request ) {
 		var item_id = ( 'undefined' !== typeof request.item_id ) ? request.item_id : null;	
 		var data = ( 'undefined' !== typeof request.data ) ? request.data : null;
 		var on_success = ( 'function' === typeof request.on_success ) ? request.on_success : Private.default.on_success;
 		var on_error = ( 'function' === typeof request.on_error ) ? request.on_error : Private.default.on_error;
-		var own_on_success = function() {
+		var own_on_success = function( revision_id ) {
 			if( 'function' === typeof on_success ) {
-				on_success( request );
+				on_success( revision_id );
+			}
+		};
+		Private.item.save( item_id, data, own_on_success, on_error );
+	};
+
+	/* store a new revision for an existing published item given an item id and activate it */
+	/* returns the revision object on_success */
+	/* returns an error object on error */
+	Public.prototype.update = function( request ) {
+		var item_id = ( 'undefined' !== typeof request.item_id ) ? request.item_id : null;	
+		var data = ( 'undefined' !== typeof request.data ) ? request.data : null;
+		var on_success = ( 'function' === typeof request.on_success ) ? request.on_success : Private.default.on_success;
+		var on_error = ( 'function' === typeof request.on_error ) ? request.on_error : Private.default.on_error;
+		var own_on_success = function( revision_id ) {
+			if( 'function' === typeof on_success ) {
+				on_success( revision_id );
 			}
 		};
 		Private.item.update( item_id, data, own_on_success, on_error );
@@ -1342,9 +1335,9 @@ var Chronicle = ( function() {
 		var revision_id = ( 'undefined' !== typeof request.revision_id ) ? request.revision_id : null;	
 		var on_success = ( 'function' === typeof request.on_success ) ? request.on_success : Private.default.on_success;
 		var on_error = ( 'function' === typeof request.on_error ) ? request.on_error : Private.default.on_error;
-		var own_on_success = function() {
+		var own_on_success = function( revision ) {
 			if( 'function' === typeof on_success ) {
-				on_success( request );
+				on_success( revision );
 			}
 		};
 		Private.revision.activate( item_id, revision_id, own_on_success, on_error );
@@ -1367,9 +1360,9 @@ var Chronicle = ( function() {
 	};
 
 	/* get a revision given an item id and a revision id; get the most recent revision given no revision id  */
-	/* returns the request object on_success */
+	/* returns the item or revision object on_success */
 	/* returns an error object on error */
-	Public.prototype.get = function( request ) {
+	Public.prototype.read = function( request ) {
 		var revision_id = ( 'undefined' !== typeof request.revision_id ) ? request.revision_id : null;	
 		var item_id = ( 'undefined' !== typeof request.item_id ) ? request.item_id : null;	
 		var on_success = ( 'function' === typeof request.on_success ) ? request.on_success : Private.default.on_success;
@@ -1386,26 +1379,12 @@ var Chronicle = ( function() {
 		}
 	};
 
-	/* null out a revision given a revision id */
-	/* returns the request object on_success */
-	/* returns an error object on error */
-	Public.prototype.purge = function( request ) {
-		var revision_id = ( 'undefined' !== typeof request.revision_id ) ? request.revision_id : null;	
-		var on_success = ( 'function' === typeof request.on_success ) ? request.on_success : Private.default.on_success;
-		var on_error = ( 'function' === typeof request.on_error ) ? request.on_error : Private.default.on_error;
-		var own_on_success = function() {
-			if( 'function' === typeof on_success ) {
-				on_success( request );
-			}
-		};
-		Private.revision.purge( revision_id, own_on_success, on_error );
-	};
-
 	/* null out all previous revisions given a revision id */
 	/* returns the request object on_success */
 	/* returns an error object on error */
 	Public.prototype.coverup = function( request ) {
 		var revision_id = ( 'undefined' !== typeof request.revision_id ) ? request.revision_id : null;	
+		var count = ( 'number' === typeof request.count ) ? request.count : null;
 		var on_success = ( 'function' === typeof request.on_success ) ? request.on_success : Private.default.on_success;
 		var on_error = ( 'function' === typeof request.on_error ) ? request.on_error : Private.default.on_error;
 		var own_on_success = function() {
@@ -1421,6 +1400,7 @@ var Chronicle = ( function() {
 	/* returns an error object on error */
 	Public.prototype.expunge = function( request ) {
 		var revision_id = ( 'undefined' !== typeof request.revision_id ) ? request.revision_id : null;	
+		var count = ( 'number' === typeof request.count ) ? request.count : null;
 		var on_success = ( 'function' === typeof request.on_success ) ? request.on_success : Private.default.on_success;
 		var on_error = ( 'function' === typeof request.on_error ) ? request.on_error : Private.default.on_error;
 		var own_on_success = function() {
@@ -1432,19 +1412,19 @@ var Chronicle = ( function() {
 	};
 
 	/* get the difference between revisions given a base item id and a comparison item id */
-	/* returns the request object on_success */
+	/* returns the object difference on_success */
 	/* returns an error object on error */
 	Public.prototype.compare = function( request ) {
 		var base_revision_id = ( 'undefined' !== typeof request.base ) ? request.base : null;	
 		var comparison_revision_id = ( 'undefined' !== typeof request.comparison ) ? request.comparison : null;	
 		var on_success = ( 'function' === typeof request.on_success ) ? request.on_success : Private.default.on_success;
 		var on_error = ( 'function' === typeof request.on_error ) ? request.on_error : Private.default.on_error;
-		var own_on_success = function() {
+		var own_on_success = function( diff ) {
 			if( 'function' === typeof on_success ) {
-				on_success( request );
+				on_success( diff  );
 			}
 		};
-		Private.utils.diff_obj( revision_id, own_on_success, on_error );
+		Private.revisions.compare( base_revision_id, comparison_revision_id, own_on_success, on_error );
 	};
 
 	return new Public();
