@@ -16,7 +16,7 @@ var Chronicle = ( function() {
 	var version = 1;
 	var InDB;
 	var debug = true;
-	var db_name = 'Chronicle';
+	var db_name = db_name;
 	var db_ver = 1;
 	var Private = function() {};
 
@@ -97,7 +97,7 @@ var Chronicle = ( function() {
 
 		var indexes = {
 			'primary': {
-				'key': 'id'
+				key: 'id'
 				, 'incrementing': true
 				, 'unique': true
 			}
@@ -106,7 +106,7 @@ var Chronicle = ( function() {
 		};
 
 		InDB.install( {
-			database: 'Chronicle'
+			database: db_name
 			, store: Private.revisions.table_name
 			, indexes: indexes
 			, on_success: own_on_success
@@ -115,7 +115,7 @@ var Chronicle = ( function() {
 
 	};
 
-	Private.revision.purge = function( item_id, revision_id, own_on_success, own_on_error ) {
+	Private.revision.delete = function( item_id, revision_id, own_on_success, own_on_error ) {
 
 		/* Callbacks */
 
@@ -167,14 +167,14 @@ var Chronicle = ( function() {
 		/* Request */
 
 		InDB.get( {
-			'index': index
-			, 'key': key
-			, 'expecting': expecting
-			, 'on_success': own_on_success
-			, 'on_error': own_on_error
+			index: index
+			, key: key
+			, expecting: expecting
+			, on_success: own_on_success
+			, on_error: own_on_error
 			, 'properties': properties
-			, 'store': store
-			, database: 'Chronicle'
+			, store: store
+			, database: db_name
 		} );
 
 	};
@@ -226,20 +226,20 @@ var Chronicle = ( function() {
 		/* Request */
 	
 		InDB.cursor.get( {
-			'direction': direction
-			, 'expecting': expecting
-			, 'key': key
-			, 'index': index
-			, 'left': left
-			, 'left_inclusive': left_inclusive
-			, 'limit': limit
-			, 'on_success': own_on_success
-			, 'on_complete': own_on_complete
-			, 'on_error': own_on_error
-			, 'right': right
-			, 'right_inclusive': right_inclusive
-			, 'store': store
-			, database: 'Chronicle'
+			direction: direction
+			, expecting: expecting
+			, key: key
+			, index: index
+			, left: left
+			, left_inclusive: left_inclusive
+			, limit: limit
+			, on_success: own_on_success
+			, on_complete: own_on_complete
+			, on_error: own_on_error
+			, right: right
+			, right_inclusive: right_inclusive
+			, store: store
+			, database: db_name
 		} );
 
 	};
@@ -349,20 +349,20 @@ var Chronicle = ( function() {
 	
 		InDB.cursor.update( {
 			'data': data
-			, 'direction': direction
-			, 'expecting': expecting
-			, 'key': key
-			, 'index': index
-			, 'left': left
-			, 'left_inclusive': left_inclusive
-			, 'limit': limit
-			, 'on_success': own_on_success
-			, 'on_complete': own_on_complete
-			, 'on_error': own_on_error
-			, 'right': right
-			, 'right_inclusive': right_inclusive
-			, 'store': store
-			, database: 'Chronicle'
+			, direction: direction
+			, expecting: expecting
+			, key: key
+			, index: index
+			, left: left
+			, left_inclusive: left_inclusive
+			, limit: limit
+			, on_success: own_on_success
+			, on_complete: own_on_complete
+			, on_error: own_on_error
+			, right: right
+			, right_inclusive: right_inclusive
+			, store: store
+			, database: db_name
 		} );
 
 	};
@@ -421,10 +421,10 @@ var Chronicle = ( function() {
 
 		InDB.add( {
 			'data': own_data
-			, 'on_success': own_on_success
-			, 'on_error': own_on_error
-			, 'store': store
-			, database: 'Chronicle'
+			, on_success: own_on_success
+			, on_error: own_on_error
+			, store: store
+			, database: db_name
 		} );
 
 	};
@@ -479,10 +479,10 @@ var Chronicle = ( function() {
 			'data': data
 			, key: item_id
 			, index: null
-			, 'on_success': own_on_success
-			, 'on_error': own_on_error
-			, 'store': store
-			, database: 'Chronicle'
+			, on_success: own_on_success
+			, on_error: own_on_error
+			, store: store
+			, database: db_name
 		} );
 
 	};
@@ -511,7 +511,7 @@ var Chronicle = ( function() {
 
 		var indexes = {
 			'primary': {
-				'key': 'id'
+				key: 'id'
 				, 'incrementing': true
 				, 'unique': true
 			}
@@ -543,13 +543,28 @@ var Chronicle = ( function() {
 			, created: new Date().getTime()
 		};
 
+		var result = {
+			published: false
+			, trashed: false
+			, modified: own_data.modified
+			, created: own_data.created
+			, type: 'item'
+		};
+
 		/* Callbacks */
 
 		var own_on_success = function( item_id ) {
 			console.log('Private.item.create own_on_success',item_id);
+			result.item_id = item_id;
 			var inner_on_success = function( revision_id ) {
+				result.revision_id = revision_id;
+				var result_on_success = function() {
+					if( 'function' === typeof on_success ) {
+						on_success( result );
+					}
+				};
 				console.log('Private.item.create inner_on_success',item_id,revision_id);
-				Private.revision.activate( item_id, revision_id, on_success, on_error );
+				Private.revision.activate( item_id, revision_id, result_on_success, on_error );
 			};
 			Private.revision.create( item_id, data, inner_on_success, on_error );
 		};
@@ -564,10 +579,10 @@ var Chronicle = ( function() {
 
 		InDB.add( {
 			'data': own_data
-			, 'on_success': own_on_success
-			, 'on_error': own_on_error
-			, 'store': store
-			, database: 'Chronicle'
+			, on_success: own_on_success
+			, on_error: own_on_error
+			, store: store
+			, database: db_name
 		} );
 
 	};
@@ -599,10 +614,10 @@ var Chronicle = ( function() {
 			'data': data
 			, key: item_id
 			, index: null
-			, 'on_success': own_on_success
-			, 'on_error': own_on_error
-			, 'store': store
-			, database: 'Chronicle'
+			, on_success: own_on_success
+			, on_error: own_on_error
+			, store: store
+			, database: db_name
 		} );
 
 	};
@@ -639,14 +654,14 @@ var Chronicle = ( function() {
 		/* Request */
 
 		InDB.get( {
-			'index': index
-			, 'key': key
-			, 'expecting': expecting
-			, 'on_success': own_on_success
-			, 'on_error': own_on_error
+			index: index
+			, key: key
+			, expecting: expecting
+			, on_success: own_on_success
+			, on_error: own_on_error
 			, 'properties': properties
-			, 'store': store
-			, database: 'Chronicle'
+			, store: store
+			, database: db_name
 		} );
 
 
@@ -698,20 +713,20 @@ var Chronicle = ( function() {
 		/* Request */
 	
 		InDB.cursor.get( {
-			'direction': direction
-			, 'expecting': expecting
-			, 'key': key
-			, 'index': index
-			, 'left': left
-			, 'left_inclusive': left_inclusive
-			, 'limit': limit
-			, 'on_success': own_on_success
-			, 'on_complete': own_on_complete
-			, 'on_error': own_on_error
-			, 'right': right
-			, 'right_inclusive': right_inclusive
-			, 'store': store
-			, database: 'Chronicle'
+			direction: direction
+			, expecting: expecting
+			, key: key
+			, index: index
+			, left: left
+			, left_inclusive: left_inclusive
+			, limit: limit
+			, on_success: own_on_success
+			, on_complete: own_on_complete
+			, on_error: own_on_error
+			, right: right
+			, right_inclusive: right_inclusive
+			, store: store
+			, database: db_name
 		} );
 
 
@@ -825,20 +840,20 @@ var Chronicle = ( function() {
 		/* Request */
 
 		InDB.cursor.delete( {
-			'direction': direction
-			, 'expecting': expecting
-			, 'key': key
-			, 'index': index
-			, 'left': left
-			, 'left_inclusive': left_inclusive
-			, 'limit': limit
-			, 'on_success': own_on_success
-			, 'on_complete': own_on_complete
-			, 'on_error': own_on_error
-			, 'right': right
-			, 'right_inclusive': right_inclusive
-			, 'store': store
-			, database: 'Chronicle'
+			direction: direction
+			, expecting: expecting
+			, key: key
+			, index: index
+			, left: left
+			, left_inclusive: left_inclusive
+			, limit: limit
+			, on_success: own_on_success
+			, on_complete: own_on_complete
+			, on_error: own_on_error
+			, right: right
+			, right_inclusive: right_inclusive
+			, store: store
+			, database: db_name
 		} );
 
 	};
@@ -894,42 +909,59 @@ var Chronicle = ( function() {
 		/* Request */
 
 		InDB.cursor.get( {
-			'direction': direction
-			, 'expecting': expecting
-			, 'key': key
-			, 'index': index
-			, 'left': left
-			, 'left_inclusive': left_inclusive
-			, 'limit': limit
-			, 'on_success': own_on_success
-			, 'on_complete': own_on_complete
-			, 'on_error': own_on_error
+			direction: direction
+			, expecting: expecting
+			, key: key
+			, index: index
+			, left: left
+			, left_inclusive: left_inclusive
+			, limit: limit
+			, on_success: own_on_success
+			, on_complete: own_on_complete
+			, on_error: own_on_error
 			, 'properties': properties
-			, 'right': right
-			, 'right_inclusive': right_inclusive
-			, 'store': store
-			, database: 'Chronicle'
+			, right: right
+			, right_inclusive: right_inclusive
+			, store: store
+			, database: db_name
 		} );
 
 	};
 
-	Private.item.delete = function( item_id, on_success, on_error ) {
+	Private.item.delete = function( item_id, on_success, on_error, on_complete ) {
 
 		/* Setup */
 
 		var store = Private.items.table_name;
 
-		/* Defaults */
-
-		var index = null;
-		var key = item_id;
-
 		/* Callbacks */
 
 		var own_on_success = function( value ) {
-			if( 'function' === typeof on_success ) {
-				on_success( value );
-			}
+
+			var result_on_success = function() {
+				if( 'function' === typeof on_success ) {
+					on_success( value );
+				}
+			};
+
+			var result_on_complete = function( context ) {
+				if( 'function' === typeof on_error ) {
+					on_error( context );
+				}
+			};
+
+			/* Request */
+
+			InDB.delete( {
+				index: 'item_id'
+				, key: item_id
+				, on_success: result_on_success
+				, on_error: own_on_error
+				, on_complete: result_on_complete
+				, store: Private.revisions.table_name
+				, database: db_name
+			} );
+
 		};
 
 		var own_on_error = function( context ) {
@@ -941,12 +973,12 @@ var Chronicle = ( function() {
 		/* Request */
 
 		InDB.delete( {
-			'index': index
-			, 'key': key
-			, 'on_success': own_on_success
-			, 'on_error': own_on_error
-			, 'store': store
-			, database: 'Chronicle'
+			index: null
+			, key: item_id
+			, on_success: own_on_success
+			, on_error: own_on_error
+			, store: store
+			, database: db_name
 		} );
 
 	};
@@ -998,20 +1030,20 @@ var Chronicle = ( function() {
 		/* Request */
 	
 		InDB.cursor.delete( {
-			'direction': direction
-			, 'expecting': expecting
-			, 'key': key
-			, 'index': index
-			, 'left': left
-			, 'left_inclusive': left_inclusive
-			, 'limit': limit
-			, 'on_success': own_on_success
-			, 'on_complete': own_on_complete
-			, 'on_error': own_on_error
-			, 'right': right
-			, 'right_inclusive': right_inclusive
-			, 'store': store
-			, database: 'Chronicle'
+			direction: direction
+			, expecting: expecting
+			, key: key
+			, index: index
+			, left: left
+			, left_inclusive: left_inclusive
+			, limit: limit
+			, on_success: own_on_success
+			, on_complete: own_on_complete
+			, on_error: own_on_error
+			, right: right
+			, right_inclusive: right_inclusive
+			, store: store
+			, database: db_name
 		} );
 
 	};
@@ -1063,20 +1095,20 @@ var Chronicle = ( function() {
 		/* Request */
 	
 		InDB.cursor.delete( {
-			'direction': direction
-			, 'expecting': expecting
-			, 'key': key
-			, 'index': index
-			, 'left': left
-			, 'left_inclusive': left_inclusive
-			, 'limit': limit
-			, 'on_success': own_on_success
-			, 'on_complete': own_on_complete
-			, 'on_error': own_on_error
-			, 'right': right
-			, 'right_inclusive': right_inclusive
-			, 'store': store
-			, database: 'Chronicle'
+			direction: direction
+			, expecting: expecting
+			, key: key
+			, index: index
+			, left: left
+			, left_inclusive: left_inclusive
+			, limit: limit
+			, on_success: own_on_success
+			, on_complete: own_on_complete
+			, on_error: own_on_error
+			, right: right
+			, right_inclusive: right_inclusive
+			, store: store
+			, database: db_name
 		} );
 
 	};
