@@ -1133,7 +1133,7 @@ var Chronicle = ( function() {
 				, on_error: own_on_error
 				, right: null
 				, right_inclusive: null
-				, store: store
+				, store: Private.revisions.table_name
 			} );
 
 		};
