@@ -943,7 +943,14 @@ var Chronicle = ( function() {
 		var results = [];
 
 		var own_on_success = function( response ) {
-			if( 'undefined' !== typeof response && null !== response ) {
+			var attrs = 0, attr;
+			for( attr in response ) {
+				if( response.hasOwnProperty( attr ) ) {
+					attrs = 1;
+					break;
+				}
+			}
+			if( 'undefined' !== typeof response && null !== response && attrs > 0 ) {
 				results.push( response );
 			}
 		};
@@ -1019,7 +1026,14 @@ var Chronicle = ( function() {
 		var results = [];
 
 		var own_on_success = function( response ) {
-			if( 'undefined' !== typeof response && null !== response ) {
+			var attrs = 0, attr;
+			for( attr in response ) {
+				if( response.hasOwnProperty( attr ) ) {
+					attrs = 1;
+					break;
+				}
+			}
+			if( 'undefined' !== typeof response && null !== response && attrs > 0 ) {
 				results.push( response );
 			}
 			if( 'function' === typeof on_success ) {
