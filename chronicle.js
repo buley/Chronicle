@@ -562,7 +562,7 @@ var Chronicle = ( function() {
 
 	};
 
-	Private.item.create = function( data, on_success, on_error ) {	
+	Private.item.create = function( id, data, on_success, on_error ) {	
 
 		/* Setup */
 
@@ -576,6 +576,9 @@ var Chronicle = ( function() {
 			, created: new Date().getTime()
 		};
 
+		if( 'undefined' !== typeof id && null !== id ) {
+			own_data.id = id;
+		}
 		var result = {
 			id: 0
 			, data: data
@@ -1392,6 +1395,7 @@ var Chronicle = ( function() {
 	/* returns an error object on error */
 	Public.prototype.create = function( request ) {
 		var data = ( 'undefined' !== typeof request.data ) ? request.data : null;
+		var id = ( 'undefined' !== typeof request.item_id ) ? request.item_id : null;
 		var on_success = ( 'function' === typeof request.on_success ) ? request.on_success : Private.default.on_success;
 		var on_error = ( 'function' === typeof request.on_error ) ? request.on_error : Private.default.on_error;
 		var own_on_success = function( item_id, revision_id ) {
@@ -1399,7 +1403,7 @@ var Chronicle = ( function() {
 				on_success( item_id, revision_id );
 			}
 		};
-		Private.item.create( data, own_on_success, on_error );
+		Private.item.create( id, data, own_on_success, on_error );
 	};
 
 	/* delete (perminant purge) an item given an item id */
