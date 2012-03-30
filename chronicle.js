@@ -576,7 +576,7 @@ var Chronicle = ( function() {
 			, created: new Date().getTime()
 		};
 
-		var item = {
+		var result = {
 			id: 0
 			, data: data
 			, published: false
@@ -593,7 +593,7 @@ var Chronicle = ( function() {
 			console.log('Private.item.create own_on_success',item);
 
 			var inner_on_success = function( revision ) {
-				item.revision_id = revision.id;
+				result.revision_id = revision.id;
 				var result_on_success = function() {
 					if( 'function' === typeof on_success ) {
 						on_success( result );
