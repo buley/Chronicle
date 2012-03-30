@@ -569,8 +569,8 @@ var Chronicle = ( function() {
 		var store = Private.items.table_name;
 
 		var own_data = {
-			id: 0
-			, published: false
+			data: data
+			, ublished: false
 			, visible: false
 			, modified: new Date().getTime()
 			, created: new Date().getTime()
@@ -578,6 +578,7 @@ var Chronicle = ( function() {
 
 		var item = {
 			id: 0
+			, data: data
 			, published: false
 			, visible: false
 			, modified: own_data.modified
