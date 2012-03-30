@@ -209,7 +209,7 @@ var Chronicle = ( function() {
 		/* Callbacks */
 
 		var own_on_success = function( response ) {
-			results.push( reponse );
+			results.push( response );
 		};
 
 		var own_on_complete = function() {
@@ -715,7 +715,7 @@ var Chronicle = ( function() {
 		/* Callbacks */
 
 		var own_on_success = function( response ) {
-			results.push( reponse );
+			results.push( response );
 		};
 
 		var own_on_complete = function() {
@@ -870,7 +870,7 @@ var Chronicle = ( function() {
 		/* Callbacks */
 
 		var own_on_success = function( response ) {
-			results.push( reponse );
+			results.push( response );
 		};
 
 		var own_on_complete = function() {
@@ -943,7 +943,7 @@ var Chronicle = ( function() {
 		var results = [];
 
 		var own_on_success = function( response ) {
-			results.push( reponse );
+			results.push( response );
 		};
 
 		var own_on_complete = function() {
@@ -1017,7 +1017,7 @@ var Chronicle = ( function() {
 		var results = [];
 
 		var own_on_success = function( response ) {
-			results.push( reponse );
+			results.push( response );
 		};
 
 		var own_on_complete = function() {
@@ -1145,7 +1145,7 @@ var Chronicle = ( function() {
 		/* Callbacks */
 
 		var own_on_success = function( response ) {
-			results.push( reponse );
+			results.push( response );
 		};
 
 		var own_on_complete = function() {
@@ -1210,7 +1210,7 @@ var Chronicle = ( function() {
 		/* Callbacks */
 
 		var own_on_success = function( response ) {
-			results.push( reponse );
+			results.push( response );
 		};
 
 		var own_on_complete = function() {
