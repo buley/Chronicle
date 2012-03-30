@@ -420,7 +420,7 @@ var Chronicle = ( function() {
 		var return_data = {
 			data: data
 			, modified: own_data.modified
-			, created: own_data.created)
+			, created: own_data.created
 			, item_id: item_id
 		};
 
