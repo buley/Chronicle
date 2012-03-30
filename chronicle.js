@@ -143,7 +143,7 @@ var Chronicle = ( function() {
 
 	};
 
-	Private.revision.get = function( revision_id, on_success, on_error ) {
+	Private.revision.get = function( item_id, revision_id, on_success, on_error ) {
 
 		/* Setup */
 
