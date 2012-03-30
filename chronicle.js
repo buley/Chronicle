@@ -1018,6 +1018,9 @@ var Chronicle = ( function() {
 
 		var own_on_success = function( response ) {
 			results.push( response );
+			if( 'function' === typeof on_success ) {
+				on_complete( response );
+			}
 		};
 
 		var own_on_complete = function() {
@@ -1026,8 +1029,8 @@ var Chronicle = ( function() {
 					on_error( errors, results );
 				}
 			} else {
-				if( 'function' === typeof on_success ) {
-					on_success( results );
+				if( 'function' === typeof on_complete ) {
+					on_complete( results );
 				}
 			}
 
