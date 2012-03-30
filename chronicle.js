@@ -178,7 +178,7 @@ var Chronicle = ( function() {
 			, expecting: expecting
 			, on_success: own_on_success
 			, on_error: own_on_error
-			, 'properties': properties
+			, properties: properties
 			, store: store
 			, database: db_name
 		} );
@@ -683,7 +683,7 @@ var Chronicle = ( function() {
 			, expecting: expecting
 			, on_success: own_on_success
 			, on_error: own_on_error
-			, 'properties': properties
+			, properties: properties
 			, store: store
 			, database: db_name
 		} );
@@ -911,24 +911,28 @@ var Chronicle = ( function() {
 
 	};
 
-	//returns all items
-	//if given item_id, returns all revisiosn for that item
-
-	Private.item.list = function( item_id, on_success, on_error ) {
+	Private.items.list = function( item_id, passed_index, begin, end, descending, on_success, on_error ) {
 
 		/* Setup */
 
-		var store = Private.revisions.table_name;
+		var store = Private.items.table_name;
 
 		/* Defaults */
 
-		var index = 'item_id';
+		var index = 'modified';
+		if( 'id' === passed_index ) {
+			index = 'id';
+		} else if( 'modified' === passed_index ) {
+			index = 'modified';
+		} else if( 'created' === passed_index ) {
+			index = 'created';
+		}
 		var limit = null;
-		var direction = InDB.cursor.direction.next();
+		var direction = ( true === descending ) ? InDB.cursor.direction.previous() : InDB.cursor.direction.next();
 		var key = item_id;
-		var left = null;
+		var left = begin;
 		var properties = null;
-		var right = null;
+		var right = end;
 		var left_inclusive = null;
 		var right_inclusive = null;
 		var expecting = null;
@@ -972,7 +976,7 @@ var Chronicle = ( function() {
 			, on_success: own_on_success
 			, on_complete: own_on_complete
 			, on_error: own_on_error
-			, 'properties': properties
+			, properties: properties
 			, right: right
 			, right_inclusive: right_inclusive
 			, store: store
@@ -980,6 +984,81 @@ var Chronicle = ( function() {
 		} );
 
 	};
+
+	Private.revisions.list = function( item_id, passed_index, begin, end, descending, on_success, on_error ) {
+
+		/* Setup */
+
+		var store = Private.revisions.table_name;
+
+		/* Defaults */
+
+		var index;
+		if( 'id' === passed_index ) {
+			index = 'id';
+		} else if( 'modified' === passed_index ) {
+			index = 'modified';
+		} else if( 'created' === passed_index ) {
+			index = 'created';
+		}
+		var limit = null;
+		var direction = ( true === descending ) ? InDB.cursor.direction.previous() : InDB.cursor.direction.next();
+		var key = item_id;
+		var left = begin;
+		var properties = null;
+		var right = end;
+		var left_inclusive = null;
+		var right_inclusive = null;
+		var expecting = null;
+
+		/* Callbacks */
+
+		var errors = [];
+		var results = [];
+
+		var own_on_success = function( response ) {
+			results.push( reponse );
+		};
+
+		var own_on_complete = function() {
+			if( errors.length > 0 ) {
+				if( 'function' === typeof on_error ) {
+					on_error( errors, results );
+				}
+			} else {
+				if( 'function' === typeof on_success ) {
+					on_success( results );
+				}
+			}
+
+		};
+
+		var own_on_error = function( error ) {
+			errors.push( error );
+		};
+
+		/* Request */
+
+		InDB.cursor.get( {
+			direction: direction
+			, expecting: expecting
+			, key: key
+			, index: index
+			, left: left
+			, left_inclusive: left_inclusive
+			, limit: limit
+			, on_success: own_on_success
+			, on_complete: own_on_complete
+			, on_error: own_on_error
+			, properties: properties
+			, right: right
+			, right_inclusive: right_inclusive
+			, store: store
+			, database: db_name
+		} );
+
+	};
+
 
 	Private.item.delete = function( item_id, on_success, on_error, on_complete ) {
 
@@ -1317,7 +1396,6 @@ var Chronicle = ( function() {
 		}
 	};
 
-	//TODO: This was skipped for implementation check
 	/* get an items
 	 * overloaded, get an item's revisions given an item id
 	 * requires an index (modified, created, id) 
@@ -1333,16 +1411,15 @@ var Chronicle = ( function() {
 		var end = ( 'number' === typeof request.end ) ? request.end : null;
 		var index = ( 'string' === typeof request.index ) ? request.index : null;
 		var descending = ( 'boolean' === typeof request.descending ) ? request.descending : false;
-		var filter = ( 'function' === typeof request.filter ) ? request.filter : null;
 		var own_on_success = function() {
 			if( 'function' === typeof on_success ) {
 				on_success( request );
 			}
 		};
 		if( null !== item_id ) {
-			Private.items.list( item_id, index, begin, end, filter, descending, own_on_success, on_error );
+			Private.items.list( item_id, index, begin, end, descending, own_on_success, on_error );
 		} else {
-			Private.item.chronicle( item_id, index, begin, end, filter, descending, own_on_success, on_error );
+			Private.revisions.list( item_id, index, begin, end, descending, own_on_success, on_error );
 		}
 	};
 
