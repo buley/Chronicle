@@ -569,15 +569,16 @@ var Chronicle = ( function() {
 		var store = Private.items.table_name;
 
 		var own_data = {
-			revision_id: 0
+			id: 0
 			, published: false
 			, visible: false
 			, modified: new Date().getTime()
 			, created: new Date().getTime()
 		};
 
-		var result = {
-			published: false
+		var item = {
+			id: 0
+			, published: false
 			, visible: false
 			, modified: own_data.modified
 			, created: own_data.created
@@ -587,19 +588,20 @@ var Chronicle = ( function() {
 		/* Callbacks */
 
 		var own_on_success = function( item_id ) {
-			console.log('Private.item.create own_on_success',item_id);
-			result.item_id = item_id;
-			var inner_on_success = function( revision_id ) {
-				result.revision_id = revision_id;
+			result.id = item_id;
+			console.log('Private.item.create own_on_success',item);
+
+			var inner_on_success = function( revision ) {
+				item.revision_id = revision.id;
 				var result_on_success = function() {
 					if( 'function' === typeof on_success ) {
 						on_success( result );
 					}
 				};
-				console.log('Private.item.create inner_on_success',item_id,revision_id);
-				Private.revision.activate( item_id, revision_id, result_on_success, on_error );
+				console.log('Private.item.create inner_on_success',item.id,revision.id);
+				Private.revision.activate( item.id, revision.id, result_on_success, on_error );
 			};
-			Private.revision.create( item_id, data, inner_on_success, on_error );
+			Private.revision.create( item.id, data, inner_on_success, on_error );
 		};
 
 		var own_on_error = function( context ) {
