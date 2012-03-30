@@ -806,7 +806,7 @@ var Chronicle = ( function() {
 				}
 			};
 			console.log('Private.item.update own_on_success item_id',item_id,'revision',revision );
-			Private.revision.activate( item_id, revision.revision_id, result_on_success, on_error );
+			Private.revision.activate( item_id, revision.id, result_on_success, on_error );
 		};
 
 		var own_on_error = function( context ) {
