@@ -1024,7 +1024,7 @@ var Chronicle = ( function() {
 		}
 		var limit = null;
 		var direction = ( true === descending ) ? InDB.cursor.direction.previous() : InDB.cursor.direction.next();
-		var key = item_id;
+		var key = null;
 		var left = begin;
 		var properties = null;
 		var right = end;
