@@ -911,7 +911,7 @@ var Chronicle = ( function() {
 
 	};
 
-	Private.items.list = function( item_id, passed_index, begin, end, descending, on_success, on_error ) {
+	Private.items.list = function( passed_index, begin, end, descending, on_success, on_error ) {
 
 		/* Setup */
 
@@ -929,7 +929,7 @@ var Chronicle = ( function() {
 		}
 		var limit = null;
 		var direction = ( true === descending ) ? InDB.cursor.direction.previous() : InDB.cursor.direction.next();
-		var key = ( 'id' === index ) ? item_id : null;
+		var key = null;
 		var left = ( 'undefined' !== typeof begin ) ? begin : null;
 		var properties = null;
 		var right = ( 'undefined' !== typeof end ) ? end : null;
@@ -1425,8 +1425,8 @@ var Chronicle = ( function() {
 				on_complete( list );
 			}
 		};
-		if( null !== item_id ) {
-			Private.items.list( item_id, index, begin, end, descending, own_on_success, on_error, own_on_complete );
+		if( null === item_id ) {
+			Private.items.list( index, begin, end, descending, own_on_success, on_error, own_on_complete );
 		} else {
 			Private.revisions.list( item_id, index, begin, end, descending, own_on_success, on_error, own_on_complete );
 		}
