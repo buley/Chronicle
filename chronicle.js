@@ -985,7 +985,7 @@ var Chronicle = ( function() {
 
 	};
 
-	Private.revisions.list = function( item_id, passed_index, begin, end, descending, on_success, on_error ) {
+	Private.revisions.list = function( item_id, passed_index, begin, end, descending, on_success, on_error, on_complete ) {
 
 		/* Setup */
 
@@ -1019,7 +1019,7 @@ var Chronicle = ( function() {
 		var own_on_success = function( response ) {
 			results.push( response );
 			if( 'function' === typeof on_success ) {
-				on_complete( response );
+				on_success( response );
 			}
 		};
 
