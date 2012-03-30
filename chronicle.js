@@ -943,7 +943,9 @@ var Chronicle = ( function() {
 		var results = [];
 
 		var own_on_success = function( response ) {
-			results.push( response );
+			if( 'undefined' !== typeof response && null !== response ) {
+				results.push( response );
+			}
 		};
 
 		var own_on_complete = function() {
@@ -1017,7 +1019,9 @@ var Chronicle = ( function() {
 		var results = [];
 
 		var own_on_success = function( response ) {
-			results.push( response );
+			if( 'undefined' !== typeof response && null !== response ) {
+				results.push( response );
+			}
 			if( 'function' === typeof on_success ) {
 				on_success( response );
 			}
