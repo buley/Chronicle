@@ -929,10 +929,10 @@ var Chronicle = ( function() {
 		}
 		var limit = null;
 		var direction = ( true === descending ) ? InDB.cursor.direction.previous() : InDB.cursor.direction.next();
-		var key = item_id;
-		var left = begin;
+		var key = ( 'id' === index ) ? item_id : null;
+		var left = ( 'undefined' !== typeof begin ) ? begin : null;
 		var properties = null;
-		var right = end;
+		var right = ( 'undefined' !== typeof end ) ? end : null;
 		var left_inclusive = null;
 		var right_inclusive = null;
 		var expecting = null;
