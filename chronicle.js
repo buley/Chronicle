@@ -316,7 +316,7 @@ var Chronicle = ( function() {
 				}
 			};
 			if( 'undefined' !== typeof revision && null !== revision ) {
-				Private.item.modify( item_id, { revision_id: revision.id, modified: new Date().getTime() }, result_on_success, own_on_error ); 
+				Private.item.modify( item_id, { revision_id: revision.id, data: revision.data, modified: new Date().getTime() }, result_on_success, own_on_error ); 
 			} else {
 				own_on_error( revision );
 			}
