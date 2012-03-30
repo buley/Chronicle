@@ -1030,7 +1030,7 @@ var Chronicle = ( function() {
 		var right = end;
 		var left_inclusive = null;
 		var right_inclusive = null;
-		var expecting = null;
+		var expecting = { item_id: item_id };
 
 		/* Callbacks */
 
