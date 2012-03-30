@@ -590,7 +590,7 @@ var Chronicle = ( function() {
 
 		var own_on_success = function( item_id ) {
 			result.id = item_id;
-			console.log('Private.item.create own_on_success',item);
+			console.log('Private.item.create own_on_success',result);
 
 			var inner_on_success = function( revision ) {
 				result.revision_id = revision.id;
@@ -599,10 +599,10 @@ var Chronicle = ( function() {
 						on_success( result );
 					}
 				};
-				console.log('Private.item.create inner_on_success',item.id,revision.id);
-				Private.revision.activate( item.id, revision.id, result_on_success, on_error );
+				console.log('Private.item.create inner_on_success',result.id,revision.id);
+				Private.revision.activate( result.id, revision.id, result_on_success, on_error );
 			};
-			Private.revision.create( item.id, data, inner_on_success, on_error );
+			Private.revision.create( result.id, data, inner_on_success, on_error );
 		};
 
 		var own_on_error = function( context ) {
