@@ -1657,7 +1657,7 @@ var Chronicle = ( function() {
 				on_success( diff  );
 			}
 		};
-		Private.revisions.compare( base_revision_id, comparison_revision_id, own_on_success, on_error, own_on_complete );
+		Private.revisions.compare( base_revision_id, comparison_revision_id, own_on_success, on_error );
 	};
 
 	return new Public();
