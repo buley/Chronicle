@@ -417,6 +417,14 @@ var Chronicle = ( function() {
 			, item_id: item_id
 		};
 
+		var return_data = {
+			data: data
+			, modified: own_data.modified
+			, created: own_data.created)
+			, item_id: item_id
+		};
+
+	
 		/* Callbacks */
 
 		var own_on_success = function( value ) {
@@ -426,7 +434,8 @@ var Chronicle = ( function() {
 			}
 			/* Callback */
 			if( 'function' == typeof on_success ) {
-				on_success( value );
+				return_data.id = value;
+				on_success( return_data );
 			}
 		};
 
@@ -764,7 +773,7 @@ var Chronicle = ( function() {
 		/* Callbacks */
 
 		var own_on_success = function( revision ) {
-			console.log('Private.item.update own_on_success', revision );
+			console.log('Private.item.save own_on_success', revision );
 			if( 'function' === typeof on_success ) {
 				on_success( revision );
 			}
