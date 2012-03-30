@@ -1405,21 +1405,27 @@ var Chronicle = ( function() {
 	 * returns an error object on error */
 	Public.prototype.list = function( request ) {
 		var item_id = ( 'undefined' !== typeof request.item_id ) ? request.item_id : null;
+		var on_complete = ( 'function' === typeof request.on_complete ) ? request.on_complete : Private.default.on_complete;
 		var on_success = ( 'function' === typeof request.on_success ) ? request.on_success : Private.default.on_success;
 		var on_error = ( 'function' === typeof request.on_error ) ? request.on_error : Private.default.on_error;
 		var begin = ( 'number' === typeof request.begin ) ? request.begin_id : null;
 		var end = ( 'number' === typeof request.end ) ? request.end : null;
 		var index = ( 'string' === typeof request.index ) ? request.index : null;
 		var descending = ( 'boolean' === typeof request.descending ) ? request.descending : false;
-		var own_on_success = function() {
+		var own_on_success = function( item ) {
 			if( 'function' === typeof on_success ) {
-				on_success( request );
+				on_success( item );
+			}
+		};
+		var own_on_complete = function( list ) {
+			if( 'function' === typeof on_complete ) {
+				on_complete( list );
 			}
 		};
 		if( null !== item_id ) {
-			Private.items.list( item_id, index, begin, end, descending, own_on_success, on_error );
+			Private.items.list( item_id, index, begin, end, descending, own_on_success, on_error, own_on_complete );
 		} else {
-			Private.revisions.list( item_id, index, begin, end, descending, own_on_success, on_error );
+			Private.revisions.list( item_id, index, begin, end, descending, own_on_success, on_error, own_on_complete );
 		}
 	};
 
