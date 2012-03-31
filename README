@@ -40,10 +40,7 @@ Chronicle.delete( { 'item_id': 1, on_success: function() {
  * Takes an optional descending boolean (default is false)
  * Returns each item object in succession on_success or an array of item objects on complete. */
 
-Chronicle.list( { item_id: 1, begin: null, end: null, index: 'modified', descending: true, filter: function(row){
-	console.log('Chronicle.list filter', row );
-        return true;
-}, on_complete: function( res ) {
+Chronicle.list( { item_id: 1, begin: null, end: null, index: 'modified', descending: true, on_complete: function( res ) {
 	console.log('Chronicle.list complete', res );
 }, on_success: function( res ) {
 	console.log('Chronicle.list success', res );

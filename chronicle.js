@@ -926,7 +926,7 @@ var Chronicle = ( function() {
 
 	};
 
-	Private.items.list = function( passed_index, begin, end, descending, on_success, on_error ) {
+	Private.items.list = function( passed_index, begin, end, descending, on_success, on_error, on_complete ) {
 
 		/* Setup */
 
@@ -965,6 +965,9 @@ var Chronicle = ( function() {
 					break;
 				}
 			}
+			if( 'function' === typeof on_success ) {
+				on_success( response, results );
+			}
 			if( 'undefined' !== typeof response && null !== response && attrs > 0 ) {
 				results.push( response );
 			}
@@ -976,8 +979,8 @@ var Chronicle = ( function() {
 					on_error( errors, results );
 				}
 			} else {
-				if( 'function' === typeof on_success ) {
-					on_success( results );
+				if( 'function' === typeof on_complete ) {
+					on_complete( results );
 				}
 			}
 
