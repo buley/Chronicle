@@ -19,7 +19,6 @@ var Chronicle = ( function() {
 	var db_ver_key = '__' + db_name + '_ver';
 	var db_ver = parseInt( window.localStorage.getItem( db_ver_key ), 10 );
 	if( true === isNaN( db_ver ) ) {
-		window.localStorage.setItem( db_ver_key, 1 );
 		db_ver = 1;
 	}
 	var Private = function() {};
