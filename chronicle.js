@@ -59,7 +59,6 @@ var Chronicle = ( function() {
 			count += 1;
 			results.push( response );
 			if( 2 === count ) {
-				db_ver = 2;
 				window.localStorage.setItem( db_ver_key, 2 );
 				if( 'function' === typeof on_success ) {
 					on_success( results );
