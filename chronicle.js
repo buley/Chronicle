@@ -12,7 +12,6 @@ var Chronicle = ( function() {
 
 	/* Dependencies */
 	
-
 	var version = 1;
 	var InDB;
 	var debug = true;
@@ -1378,6 +1377,10 @@ var Chronicle = ( function() {
 	var Public = function() {
 		InDB = new IDB( { database: db_name, version: db_ver, on_upgrade_needed: function() {
 			Public.prototype.install();
+		}, on_success: function( db ) {
+			if( db.version === "" ) {
+				Public.prototype.install();
+			}
 		} } );
 	};
 
