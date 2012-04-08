@@ -574,7 +574,7 @@ var Chronicle = ( function() {
 
 		var own_data = {
 			data: data
-			, ublished: false
+			, published: false
 			, visible: false
 			, modified: new Date().getTime()
 			, created: new Date().getTime()
