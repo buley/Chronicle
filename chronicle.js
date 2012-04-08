@@ -1379,6 +1379,8 @@ var Chronicle = ( function() {
 			if( db.version === "" ) {
 				Public.prototype.install();
 			}
+		}, on_error: function( err ) { 
+			console.log( "Chronicle open error" );
 		} } );
 	};
 
