@@ -1142,6 +1142,7 @@ var Chronicle = ( function() {
 				, right: null
 				, right_inclusive: null
 				, store: Private.revisions.table_name
+				, database: db_name
 			} );
 
 		};
