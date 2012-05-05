@@ -113,6 +113,7 @@ var Chronicle = ( function() {
 			}
 			, 'modified': false
 			, 'created': false
+			, 'item_id': false
 		};
 
 		InDB.install( {
